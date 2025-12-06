@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-	<base href="https://paramectium.github.io/">
+    <base href="https://paramectium.github.io/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>京阪五日遊</title>
@@ -22,109 +22,196 @@
         .jp-text { font-family: "Hiragino Sans", "Meiryo", sans-serif; }
         /* 隱藏捲軸但保持功能 */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body>
 
-<div id="app" class="max-w-md mx-auto bg-white min-h-screen shadow-lg pb-20 relative">
+<div id="app" class="max-w-md mx-auto bg-gray-50 min-h-screen shadow-lg pb-24 relative">
     
-    <header class="bg-blue-600 text-white p-6 rounded-b-3xl shadow-md sticky top-0 z-50">
+    <header class="bg-blue-600 text-white p-5 rounded-b-3xl shadow-md sticky top-0 z-50">
         <h1 class="text-2xl font-bold">🇯🇵 京都聖誕五日遊</h1>
-        <p class="text-blue-100 text-sm mt-1">12/24 - 12/28</p>
+        <p class="text-blue-100 text-sm mt-1">12/24 (二) - 12/28 (六)</p>
     </header>
 
-    <div class="flex justify-around bg-white p-2 border-b sticky top-[88px] z-40">
-        <button @click="currentTab = 'day1'" :class="{'text-blue-600 border-b-2 border-blue-600': currentTab === 'day1'}" class="flex-1 py-2 font-bold text-gray-500">Day 1<br><span class="text-xs font-normal">12/24</span></button>
-        <button @click="currentTab = 'day2'" :class="{'text-blue-600 border-b-2 border-blue-600': currentTab === 'day2'}" class="flex-1 py-2 font-bold text-gray-500">Day 2<br><span class="text-xs font-normal">12/25</span></button>
-        <button @click="currentTab = 'info'" :class="{'text-blue-600 border-b-2 border-blue-600': currentTab === 'info'}" class="flex-1 py-2 font-bold text-gray-500">住宿/資訊</button>
+    <div class="bg-white border-b sticky top-[84px] z-40 shadow-sm">
+        <div class="flex overflow-x-auto no-scrollbar py-2 px-1 space-x-2">
+            <button v-for="d in 5" :key="d" 
+                @click="currentTab = 'day'+d" 
+                :class="currentTab === 'day'+d ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-500'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                Day {{ d }}
+            </button>
+            <button @click="currentTab = 'must'" 
+                :class="currentTab === 'must' ? 'bg-pink-600 text-white shadow-md' : 'bg-pink-50 text-pink-600'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                必逛/餐廳
+            </button>
+            <button @click="currentTab = 'info'" 
+                :class="currentTab === 'info' ? 'bg-indigo-600 text-white shadow-md' : 'bg-indigo-50 text-indigo-600'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                住宿/航班
+            </button>
+        </div>
     </div>
 
     <div class="p-4 space-y-4">
 
-        <div v-if="currentTab === 'day1'" class="space-y-4">
-            <div v-for="(item, index) in schedule.day1" :key="index" class="card bg-white p-4 rounded-xl shadow border-l-4" :class="getTypeColor(item.type)">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <span class="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-600">{{ item.time }}</span>
-                        <h3 class="text-lg font-bold mt-1 text-gray-800">{{ item.title }}</h3>
+        <div v-for="d in 5" :key="d">
+            <div v-if="currentTab === 'day'+d" class="space-y-4">
+                <div v-if="schedule['day'+d].length === 0" class="text-center text-gray-400 py-10">
+                    <p>行程規劃中...</p>
+                </div>
+                
+                <div v-for="(item, index) in schedule['day'+d]" :key="index" class="card bg-white rounded-xl shadow overflow-hidden flex min-h-[100px]">
+                    
+                    <div :class="getTypeColor(item.type)" class="w-20 flex-shrink-0 flex flex-col items-center justify-center text-white p-1 text-center">
+                        <i :class="getIcon(item.type)" class="text-xl mb-1"></i>
+                        <span class="text-xs font-bold break-words w-full">{{ getTypeLabel(item.type) }}</span>
                     </div>
-                    <div class="text-2xl text-gray-300">
-                        <i :class="getIcon(item.type)"></i>
+
+                    <div class="flex-1 p-3 flex flex-col justify-center">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="text-sm font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{{ item.time }}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 leading-tight mb-2">{{ item.title }}</h3>
+                        
+                        <div class="text-sm text-gray-600 space-y-1.5">
+                            <p v-if="item.desc">{{ item.desc }}</p>
+                            
+                            <p v-if="item.transport" class="text-blue-700 bg-blue-50 px-2 py-1 rounded text-xs inline-block">
+                                <i class="fas fa-arrow-right mr-1"></i> {{ item.transport }}
+                            </p>
+
+                            <p v-if="item.note" class="text-red-600 bg-red-50 px-2 py-1 rounded text-xs font-bold border border-red-100">
+                                <i class="fas fa-exclamation-circle mr-1"></i> {{ item.note }}
+                            </p>
+
+                            <div v-if="item.address_jp" class="mt-2 bg-slate-100 p-2 rounded border border-slate-200">
+                                <p class="text-[10px] text-gray-500 mb-0.5"><i class="fas fa-taxi"></i> 給司機看/導航：</p>
+                                <p class="text-base font-bold text-slate-800 jp-text select-all leading-snug">{{ item.address_jp }}</p>
+                            </div>
+
+                            <div v-if="item.link || item.map_query" class="flex gap-2 mt-2 pt-1">
+                                <a v-if="item.map_query" :href="'https://www.google.com/maps/search/?api=1&query=' + item.map_query" target="_blank" class="flex-1 bg-green-100 text-green-700 text-center py-1.5 rounded text-xs font-bold hover:bg-green-200">
+                                    <i class="fas fa-map-marker-alt"></i> 地圖
+                                </a>
+                                <a v-if="item.link" :href="item.link" target="_blank" class="flex-1 bg-gray-100 text-gray-700 text-center py-1.5 rounded text-xs font-bold hover:bg-gray-200">
+                                    <i class="fas fa-link"></i> 資訊
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="mt-2 text-sm text-gray-600 space-y-1">
-                    <p v-if="item.desc">{{ item.desc }}</p>
-                    <p v-if="item.transport" class="text-blue-600 bg-blue-50 p-2 rounded"><i class="fas fa-train mr-1"></i> {{ item.transport }}</p>
-                    <p v-if="item.note" class="text-red-500 font-bold bg-red-50 p-2 rounded"><i class="fas fa-exclamation-circle mr-1"></i> 注意：{{ item.note }}</p>
-                    
-                    <div v-if="item.address_jp" class="mt-2 bg-gray-100 p-2 rounded border border-gray-300">
-                        <p class="text-xs text-gray-500 mb-1">給司機看 / 導航地址：</p>
-                        <p class="text-lg font-bold text-gray-900 jp-text select-all">{{ item.address_jp }}</p>
-                    </div>
-                </div>
-
-                <div class="mt-3 flex space-x-2">
-                    <a v-if="item.map_query" :href="'https://www.google.com/maps/search/?api=1&query=' + item.map_query" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow hover:bg-green-600"><i class="fas fa-map-marker-alt"></i> Google Map</a>
-                    <a v-if="item.link" :href="item.link" target="_blank" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-lg text-sm font-bold shadow hover:bg-gray-300"><i class="fas fa-link"></i> 參考網址</a>
+                <div class="text-center text-xs text-gray-400 mt-6 mb-2">
+                    End of Day {{ d }}
                 </div>
             </div>
         </div>
 
-        <div v-if="currentTab === 'day2'" class="space-y-4">
-            <div v-for="(item, index) in schedule.day2" :key="index" class="card bg-white p-4 rounded-xl shadow border-l-4" :class="getTypeColor(item.type)">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <span class="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-600">{{ item.time }}</span>
-                        <h3 class="text-lg font-bold mt-1 text-gray-800">{{ item.title }}</h3>
-                    </div>
-                    <div class="text-2xl text-gray-300">
-                        <i :class="getIcon(item.type)"></i>
-                    </div>
-                </div>
-                <div class="mt-2 text-sm text-gray-600 space-y-1">
-                    <p v-if="item.desc">{{ item.desc }}</p>
-                    <p v-if="item.transport" class="text-blue-600 bg-blue-50 p-2 rounded"><i class="fas fa-taxi mr-1"></i> {{ item.transport }}</p>
-                    <p v-if="item.note" class="text-red-500 font-bold bg-red-50 p-2 rounded"><i class="fas fa-exclamation-circle mr-1"></i> {{ item.note }}</p>
-                     <div v-if="item.address_jp" class="mt-2 bg-gray-100 p-2 rounded border border-gray-300">
-                        <p class="text-xs text-gray-500 mb-1">給司機看 / 導航地址：</p>
-                        <p class="text-lg font-bold text-gray-900 jp-text select-all">{{ item.address_jp }}</p>
+        <div v-if="currentTab === 'must'" class="space-y-6">
+            
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-pink-500">必逛景點/商店</h3>
+                <div class="space-y-4">
+                    <div v-for="(shop, idx) in mustVisit.shops" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-lg text-pink-600">{{ shop.name }}</h4>
+                            <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ shop.hours }}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1 jp-text">{{ shop.address }}</p>
+                        <div class="mt-3 flex gap-2">
+                            <a :href="'https://www.google.com/maps/search/?api=1&query=' + shop.name + ' ' + shop.address" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow-sm">
+                                <i class="fas fa-map-marker-alt"></i> 導航
+                            </a>
+                        </div>
                     </div>
                 </div>
-                 <div class="mt-3 flex space-x-2">
-                    <a v-if="item.map_query" :href="'https://www.google.com/maps/search/?api=1&query=' + item.map_query" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow hover:bg-green-600"><i class="fas fa-map-marker-alt"></i> Google Map</a>
-                    <a v-if="item.link" :href="item.link" target="_blank" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-lg text-sm font-bold shadow hover:bg-gray-300"><i class="fas fa-link"></i> 參考資訊</a>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-orange-500">推薦餐廳</h3>
+                <div class="space-y-4">
+                    <div v-for="(food, idx) in mustVisit.food" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="font-bold text-lg text-orange-600">{{ food.name }}</h4>
+                        <p class="text-sm text-gray-600 mt-1">{{ food.desc }}</p>
+                        <a href="https://www.google.com/maps/search/?api=1&query=京都錦市場" target="_blank" class="block mt-2 text-center bg-gray-100 py-2 rounded text-sm font-bold text-gray-600">
+                            查看位置
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                <h3 class="font-bold text-indigo-800 mb-2"><i class="fas fa-suitcase mr-1"></i> 行李檢查表</h3>
+                <div class="space-y-2">
+                    <label v-for="(item, i) in checkList" :key="i" class="flex items-center space-x-3 bg-white p-2 rounded shadow-sm">
+                        <input type="checkbox" class="form-checkbox h-5 w-5 text-indigo-600 rounded">
+                        <span class="text-gray-700 text-sm">{{ item }}</span>
+                    </label>
                 </div>
             </div>
         </div>
 
         <div v-if="currentTab === 'info'" class="space-y-4">
-            <div class="bg-white p-5 rounded-xl shadow border-t-4 border-indigo-500">
-                <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-hotel text-indigo-500 mr-2"></i>京都住宿</h3>
-                <p class="text-lg font-bold text-indigo-700">Super Hotel 京都・四条河原町店</p>
-                <div class="my-4 bg-gray-100 p-3 rounded border-2 border-indigo-100">
-                    <p class="text-xs text-gray-500">日文地址 (給計程車司機)：</p>
-                    <p class="text-xl font-bold text-gray-900 mt-1 jp-text">〒604-8042 京都府京都市中京区新京極通り四条上る中之町538-1</p>
+            <div class="bg-white p-5 rounded-xl shadow border-l-8 border-indigo-500">
+                <h3 class="text-lg font-bold text-gray-500 mb-1">住宿飯店</h3>
+                <p class="text-xl font-bold text-indigo-700">Super Hotel 京都・四条河原町店</p>
+                <div class="my-4 bg-gray-50 p-3 rounded border border-gray-200">
+                    <p class="text-xs text-gray-500 font-bold mb-1"><i class="fas fa-taxi"></i> 給計程車司機：</p>
+                    <p class="text-lg font-bold text-gray-900 mt-1 jp-text leading-relaxed">〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1</p>
                 </div>
-                 <a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Kyoto+Shijokawaramachi" target="_blank" class="block w-full bg-indigo-500 text-white text-center py-3 rounded-lg font-bold shadow hover:bg-indigo-600">導航至飯店</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Kyoto+Shijokawaramachi" target="_blank" class="block w-full bg-indigo-600 text-white text-center py-3 rounded-lg font-bold shadow hover:bg-indigo-700">
+                    <i class="fas fa-location-arrow mr-1"></i> 導航至飯店
+                </a>
             </div>
 
-            <div class="bg-white p-5 rounded-xl shadow border-t-4 border-sky-500">
-                <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-plane text-sky-500 mr-2"></i>航班資訊</h3>
-                <div class="flex justify-between items-center border-b pb-2 mb-2">
-                    <div class="text-center">
-                        <p class="text-2xl font-bold">TPE</p>
-                        <p class="text-xs text-gray-500">台北桃園</p>
-                        <p class="font-bold text-sky-600">11:15</p>
+            <div class="bg-white p-5 rounded-xl shadow border-l-8 border-sky-500">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-bold text-gray-500">去程航班 (12/24)</h3>
+                    <span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs font-bold">國泰 CX564</span>
+                </div>
+                <div class="flex justify-between items-center text-center mt-3">
+                    <div>
+                        <p class="text-3xl font-black text-gray-800">TPE</p>
+                        <p class="text-xs text-gray-500">桃園機場</p>
+                        <p class="text-lg font-bold text-sky-600 mt-1">11:15</p>
                     </div>
-                    <div class="text-center text-gray-400">
-                        <i class="fas fa-plane"></i>
-                        <p class="text-xs">CX564</p>
+                    <div class="text-gray-300 px-2">
+                        <i class="fas fa-plane text-2xl"></i>
+                        <div class="h-[2px] w-12 bg-gray-200 my-1"></div>
+                        <p class="text-xs">2h 40m</p>
                     </div>
-                     <div class="text-center">
-                        <p class="text-2xl font-bold">KIX</p>
+                    <div>
+                        <p class="text-3xl font-black text-gray-800">KIX</p>
                         <p class="text-xs text-gray-500">關西機場</p>
-                         <p class="font-bold text-sky-600">14:55</p>
+                        <p class="text-lg font-bold text-sky-600 mt-1">14:55</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl shadow border-l-8 border-sky-500">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-bold text-gray-500">回程航班 (12/28)</h3>
+                    <span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs font-bold">國泰 CX565</span>
+                </div>
+                <div class="flex justify-between items-center text-center mt-3">
+                    <div>
+                        <p class="text-3xl font-black text-gray-800">KIX</p>
+                        <p class="text-xs text-gray-500">關西機場</p>
+                        <p class="text-lg font-bold text-sky-600 mt-1">16:15</p>
+                    </div>
+                    <div class="text-gray-300 px-2">
+                        <i class="fas fa-plane fa-flip-horizontal text-2xl"></i>
+                        <div class="h-[2px] w-12 bg-gray-200 my-1"></div>
+                        <p class="text-xs">3h 15m</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-black text-gray-800">TPE</p>
+                        <p class="text-xs text-gray-500">桃園機場</p>
+                        <p class="text-lg font-bold text-sky-600 mt-1">18:30</p>
                     </div>
                 </div>
             </div>
@@ -142,50 +229,99 @@
 
             const schedule = {
                 day1: [
-                    { time: '07:30', title: '出發前往桃園機場', type: 'transport', desc: '集合並辦理登機手續' },
-                    { time: '11:15', title: '國泰 CX564 起飛', type: 'flight', desc: '預計 14:55 抵達關西機場', note: '午餐於飛機上享用' },
-                    { time: '15:30', title: '前往京都', type: 'transport', transport: '搭乘 JR Haruka (約80分)', note: '記得先買優惠票，現場取票排隊可能較久' },
-                    { time: '17:00', title: '前往飯店', type: 'transport', transport: '京都車站搭 Uber (BLACK VAN)', note: '車程約 15 分鐘' },
+                    { time: '07:30', title: '前往桃園機場', type: 'transport', desc: '集合並辦理登機手續' },
+                    { time: '11:15', title: '國泰 CX564 起飛', type: 'flight', desc: '14:55 抵達關西機場', note: '午餐：飛機餐' },
+                    { time: '15:30', title: '移動：前往京都', type: 'transport', transport: 'JR Haruka (約80分)', note: '先買優惠票，現場取票' },
+                    { time: '17:00', title: '移動：前往飯店', type: 'transport', transport: 'Uber (BLACK VAN)', note: '車程約 15 分鐘' },
                     { time: '18:00', title: '飯店 Check-in', type: 'hotel', desc: 'Super Hotel 四条河原町', address_jp: '京都府京都市中京区新京極通り四条上る中之町538-1', map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' },
-                    { time: '18:30', title: '晚餐 / 逛街', type: 'food', desc: '四條通周邊', note: '可視情況在京都車站先吃' },
-                    { time: '19:00', title: 'Onitsuka Tiger 購物', type: 'shop', desc: '京都店逛街', address_jp: '京都府京都市中京区河原町通四条上ル米屋町385', map_query: 'Onitsuka+Tiger+Kyoto', link: 'https://www.onitsukatiger.com/' }
+                    { time: '18:30', title: '晚餐：(待定)', type: 'food', desc: '可能在京都車站或四條通', note: '視情況調整' },
+                    { time: '19:30', title: 'Onitsuka Tiger 購物', type: 'shop', desc: '京都店逛街', address_jp: '京都府京都市中京区河原町通四条上ル米屋町385', map_query: 'Onitsuka+Tiger+Kyoto', link: 'https://www.onitsukatiger.com/' }
                 ],
                 day2: [
                     { time: '08:00', title: '清水寺', type: 'sight', desc: '清水舞台、二年坂', transport: '計程車至「五条坂」或「清水道」頂端', map_query: 'Kiyomizu-dera' },
-                    { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', desc: 'ひさご 親子丼', address_jp: '京都市東山区下河原町484', map_query: 'Hisago+Kyoto', link: 'https://bobbyfun.tw/2023-05-04-2359/' },
-                    { time: '14:00', title: '伏見稻荷大社', type: 'sight', desc: '本殿參拜 -> 千本鳥居 -> 奧社奉拜所折返', note: '不用爬山！走到奧社即可', transport: '搭乘公車前往', map_query: 'Fushimi+Inari+Taisha' },
-                    { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店', address_jp: '京都市中京区紙屋町674-2', map_query: 'Kyoto+Yakiniku+Hiro+Shijo+Kiyamachi', link: 'https://yakiniku-hiro.com/' },
-                    { time: '20:00', title: '自由活動', type: 'shop', desc: '四條通逛街或回飯店休息' }
+                    { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', desc: 'ひさご 親子丼 (11:30-16:00)', address_jp: '京都市東山区下河原町484', map_query: 'Hisago+Kyoto', link: 'https://bobbyfun.tw/2023-05-04-2359/' },
+                    { time: '14:00', title: '伏見稻荷大社', type: 'sight', desc: '本殿 -> 千本鳥居 -> 奧社折返', note: '不用爬整座山！', transport: '搭乘 BUS 前往', map_query: 'Fushimi+Inari+Taisha' },
+                    { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店 (訂位代號 #104024)', address_jp: '京都市中京区紙屋町674-2', map_query: 'Kyoto+Yakiniku+Hiro+Shijo+Kiyamachi', link: 'https://yakiniku-hiro.com/' },
+                    { time: '20:00', title: '自由活動', type: 'free', desc: '四條通逛街或回飯店休息' }
+                ],
+                day3: [
+                    { time: '08:00', title: '移動：前往京都車站', type: 'transport', desc: '準備前往嵐山' },
+                    { time: '08:30', title: '移動：前往龜岡', type: 'transport', transport: 'JR 嵯峨野線至馬堀站', desc: '下車後步行10分鐘至小火車龜岡站' },
+                    { time: '09:30', title: '嵐山小火車', type: 'sight', desc: '龜岡 -> 嵐山', note: '欣賞沿途風景' },
+                    { time: '12:00', title: '午餐：嵐山よしむら', type: 'food', desc: 'Yoshimura 蕎麥麵', map_query: 'Arashiyama+Yoshimura' },
+                    { time: '14:00', title: '嵐山散策', type: 'sight', desc: '渡月橋、竹林之道' },
+                    { time: '20:00', title: '自由活動', type: 'free', desc: '四條通逛街' }
+                ],
+                day4: [
+                    { time: '08:00', title: '奈良一日遊', type: 'sight', desc: '東大寺、奈良公園餵鹿', transport: '搭乘近鐵奈良線', map_query: 'Nara+Park' },
+                    { time: '12:00', title: '午餐', type: 'food', desc: '奈良周邊 (待定)' },
+                    { time: '15:00', title: '京都 teamLab', type: 'sight', desc: '沉浸式光影展', map_query: 'teamLab+Kyoto' },
+                    { time: '20:00', title: '自由活動', type: 'free', desc: '最後採買機會' }
+                ],
+                day5: [
+                    { time: '09:00', title: '錦市場', type: 'sight', desc: '京都的廚房，吃吃喝喝', map_query: 'Nishiki+Market' },
+                    { time: '12:00', title: '前往關西機場', type: 'transport', transport: 'JR Haruka (約80分)', note: '記得提前買票/取票' },
+                    { time: '16:15', title: '國泰 CX565 起飛', type: 'flight', desc: '18:30 抵達桃園機場' }
                 ]
             };
 
-            // 輔助功能：根據類型回傳顏色樣式
+            const mustVisit = {
+                shops: [
+                    { name: 'Onitsuka Tiger (京都店)', address: '385, Komeyacho, Shijo-agaru, Kawaramachi-Dori', hours: '11:00-21:00' },
+                    { name: 'Montbell (京都店)', address: '京都市中京区新京極通蛸薬師下ル東側町530-1', hours: '11:00-20:00' }
+                ],
+                food: [
+                    { name: '錦市場', desc: '各種京都小吃、漬物、玉子燒' }
+                ]
+            };
+
+            const checkList = ref([
+                '護照', '日幣現金', '信用卡/西瓜卡', '漫遊SIM卡/Wifi機', '充電器/行動電源', '個人藥品', '保暖衣物'
+            ]);
+
+            // 輔助功能：根據類型回傳背景顏色 (Tailwind class)
             const getTypeColor = (type) => {
                 const map = {
-                    flight: 'border-sky-500',
-                    transport: 'border-blue-400',
-                    food: 'border-orange-400',
-                    sight: 'border-green-500',
-                    shop: 'border-pink-500',
-                    hotel: 'border-indigo-500'
+                    flight: 'bg-sky-500',
+                    transport: 'bg-blue-500',
+                    food: 'bg-orange-500',
+                    sight: 'bg-green-600',
+                    shop: 'bg-pink-500',
+                    hotel: 'bg-indigo-500',
+                    free: 'bg-purple-500'
                 };
-                return map[type] || 'border-gray-300';
+                return map[type] || 'bg-gray-400';
+            };
+
+            // 輔助功能：根據類型回傳顯示文字
+            const getTypeLabel = (type) => {
+                const map = {
+                    flight: '航班',
+                    transport: '交通',
+                    food: '餐飲',
+                    sight: '景點',
+                    shop: '購物',
+                    hotel: '住宿',
+                    free: '自由'
+                };
+                return map[type] || '其他';
             };
 
             // 輔助功能：根據類型回傳 icon
             const getIcon = (type) => {
                 const map = {
                     flight: 'fas fa-plane',
-                    transport: 'fas fa-bus',
+                    transport: 'fas fa-subway',
                     food: 'fas fa-utensils',
-                    sight: 'fas fa-torii-gate', // 日本景點特色icon
+                    sight: 'fas fa-camera',
                     shop: 'fas fa-shopping-bag',
-                    hotel: 'fas fa-bed'
+                    hotel: 'fas fa-bed',
+                    free: 'fas fa-walking'
                 };
                 return map[type] || 'fas fa-circle';
             };
 
-            return { currentTab, schedule, getTypeColor, getIcon };
+            return { currentTab, schedule, mustVisit, checkList, getTypeColor, getTypeLabel, getIcon };
         }
     }).mount('#app');
 </script>
