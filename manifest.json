@@ -1,7 +1,7 @@
 {
-  "name": "京都五日遊",
+  "name": "2025京都五日",
   "short_name": "日本行",
-  "start_url": "./index.html",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
