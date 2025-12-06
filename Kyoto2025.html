@@ -53,6 +53,11 @@
                 class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
                 住宿/航班
             </button>
+            <button @click="currentTab = 'checklist'" 
+                :class="currentTab === 'checklist' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-50 text-emerald-600'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                行李清單
+            </button>
         </div>
     </div>
 
@@ -148,16 +153,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                <h3 class="font-bold text-indigo-800 mb-2"><i class="fas fa-suitcase mr-1"></i> 行李檢查表</h3>
-                <div class="space-y-2">
-                    <label v-for="(item, i) in checkList" :key="i" class="flex items-center space-x-3 bg-white p-2 rounded shadow-sm">
-                        <input type="checkbox" class="form-checkbox h-5 w-5 text-indigo-600 rounded">
-                        <span class="text-gray-700 text-sm">{{ item }}</span>
-                    </label>
-                </div>
-            </div>
         </div>
 
         <div v-if="currentTab === 'info'" class="space-y-4">
@@ -222,6 +217,21 @@
             </div>
         </div>
 
+        <div v-if="currentTab === 'checklist'" class="space-y-4">
+            <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-100 min-h-[50vh]">
+                <h3 class="text-xl font-bold text-emerald-800 mb-4 flex items-center">
+                    <i class="fas fa-suitcase mr-2"></i> 行李檢查清單
+                </h3>
+                <div class="space-y-3">
+                    <label v-for="(item, i) in checkList" :key="i" class="flex items-center space-x-3 bg-white p-3 rounded-lg shadow-sm border border-emerald-100 active:bg-emerald-50 transition-colors">
+                        <input type="checkbox" class="form-checkbox h-5 w-5 text-emerald-600 rounded focus:ring-emerald-500">
+                        <span class="text-gray-700 text-base font-medium">{{ item }}</span>
+                    </label>
+                </div>
+                <p class="text-center text-emerald-600/50 text-xs mt-6">祝您旅途愉快！</p>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -240,7 +250,6 @@
                     { time: '17:00', title: '移動：前往飯店', type: 'transport', transport: 'Uber (BLACK VAN)', note: '車程約 15 分鐘' },
                     { time: '18:00', title: '飯店 Check-in', type: 'hotel', desc: 'Super Hotel 四条河原町', address_jp: '京都府京都市中京区新京極通り四条上る中之町538-1', map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' },
                     { time: '18:30', title: '晚餐：(待定)', type: 'food', desc: '可能在京都車站或四條通', note: '視情況調整' },
-                    // 修改點：類型改為 other，內容統一
                     { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day2: [
@@ -248,7 +257,6 @@
                     { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', desc: 'ひさご 親子丼 (11:30-16:00)', address_jp: '京都市東山区下河原町484', map_query: 'Hisago+Kyoto', link: 'https://bobbyfun.tw/2023-05-04-2359/' },
                     { time: '14:00', title: '伏見稻荷大社', type: 'sight', desc: '本殿 -> 千本鳥居 -> 奧社折返', note: '不用爬整座山！', transport: '搭乘 BUS 前往', map_query: 'Fushimi+Inari+Taisha' },
                     { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店 (訂位代號 #104024)', address_jp: '京都市中京区紙屋町674-2', map_query: 'Kyoto+Yakiniku+Hiro+Shijo+Kiyamachi', link: 'https://yakiniku-hiro.com/' },
-                    // 修改點：類型改為 other
                     { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day3: [
@@ -257,14 +265,14 @@
                     { time: '09:30', title: '嵐山小火車', type: 'sight', desc: '龜岡 -> 嵐山', note: '欣賞沿途風景' },
                     { time: '12:00', title: '午餐：嵐山よしむら', type: 'food', desc: 'Yoshimura 蕎麥麵', map_query: 'Arashiyama+Yoshimura' },
                     { time: '14:00', title: '嵐山散策', type: 'sight', desc: '渡月橋、竹林之道' },
-                    // 修改點：類型改為 other
                     { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day4: [
                     { time: '08:00', title: '奈良一日遊', type: 'sight', desc: '東大寺、奈良公園餵鹿', transport: '搭乘近鐵奈良線', map_query: 'Nara+Park' },
                     { time: '12:00', title: '午餐', type: 'food', desc: '奈良周邊 (待定)' },
                     { time: '15:00', title: '京都 teamLab', type: 'sight', desc: '沉浸式光影展', map_query: 'teamLab+Kyoto' },
-                    { time: '20:00', title: '自由活動', type: 'free', desc: '最後採買機會' }
+                    // 修改點：類型改為 other，與其他天數統一
+                    { time: '20:00', title: '自由活動', type: 'other', desc: '最後採買機會' }
                 ],
                 day5: [
                     { time: '09:00', title: '錦市場', type: 'sight', desc: '京都的廚房，吃吃喝喝', map_query: 'Nishiki+Market' },
@@ -273,7 +281,6 @@
                 ]
             };
 
-            // 修改點：必逛商店結構調整 (新增 Area 層級，移除時間)
             const mustVisit = {
                 shops: [
                     {
@@ -293,7 +300,6 @@
                 '護照', '日幣現金', '信用卡/西瓜卡', '漫遊SIM卡/Wifi機', '充電器/行動電源', '個人藥品', '保暖衣物'
             ]);
 
-            // 輔助功能：根據類型回傳背景顏色 (Tailwind class)
             const getTypeColor = (type) => {
                 const map = {
                     flight: 'bg-sky-500',
@@ -303,12 +309,11 @@
                     shop: 'bg-pink-500',
                     hotel: 'bg-indigo-500',
                     free: 'bg-purple-500',
-                    other: 'bg-gray-500' // 新增其他類型顏色
+                    other: 'bg-gray-500' 
                 };
                 return map[type] || 'bg-gray-400';
             };
 
-            // 輔助功能：根據類型回傳顯示文字
             const getTypeLabel = (type) => {
                 const map = {
                     flight: '航班',
@@ -318,12 +323,11 @@
                     shop: '購物',
                     hotel: '住宿',
                     free: '自由',
-                    other: '其他' // 新增其他類型文字
+                    other: '其他'
                 };
                 return map[type] || '其他';
             };
 
-            // 輔助功能：根據類型回傳 icon
             const getIcon = (type) => {
                 const map = {
                     flight: 'fas fa-plane',
@@ -333,7 +337,7 @@
                     shop: 'fas fa-shopping-bag',
                     hotel: 'fas fa-bed',
                     free: 'fas fa-walking',
-                    other: 'fas fa-star' // 新增其他類型 icon
+                    other: 'fas fa-star'
                 };
                 return map[type] || 'fas fa-circle';
             };
