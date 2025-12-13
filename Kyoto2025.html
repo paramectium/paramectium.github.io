@@ -103,7 +103,7 @@
                                     <i class="fas fa-map-marker-alt"></i> 地圖
                                 </a>
                                 <a v-if="item.link" :href="item.link" target="_blank" class="flex-1 bg-gray-100 text-gray-700 text-center py-1.5 rounded text-xs font-bold hover:bg-gray-200">
-                                    <i class="fas fa-link"></i> 資訊
+                                    <i class="fas fa-link"></i> {{ item.link_text || '參考資訊' }}
                                 </a>
                             </div>
                         </div>
@@ -122,23 +122,38 @@
                 <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-pink-500">必逛景點/商店</h3>
                 <div class="space-y-6">
                     <div v-for="(area, areaIdx) in mustVisit.shops" :key="areaIdx">
-                        <h4 class="font-bold text-lg text-gray-700 mb-2 pl-1"><i class="fas fa-map-pin text-pink-500 mr-1"></i> {{ area.area }}</h4>
+                        <h4 class="font-bold text-lg text-gray-700 mb-2 pl-1 flex items-center">
+                            <i class="fas fa-map-pin text-pink-500 mr-2"></i> {{ area.area }}
+                        </h4>
                         
                         <div class="space-y-3">
                             <div v-for="(shop, idx) in area.items" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 ml-2">
                                 <div class="flex justify-between items-start">
                                     <h4 class="font-bold text-lg text-pink-600">{{ shop.name }}</h4>
                                 </div>
+                                
+                                <p v-if="shop.desc" class="text-sm text-gray-800 font-bold mt-1">
+                                    {{ shop.desc }}
+                                </p>
+
                                 <p v-if="shop.hours" class="text-xs text-orange-600 font-bold mt-1">
                                     <i class="far fa-clock"></i> {{ shop.hours }}
                                 </p>
-                                <p class="text-sm text-gray-600 mt-1 jp-text">{{ shop.address }}</p>
+                                
+                                <p v-if="shop.note" class="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded leading-relaxed border border-gray-100">
+                                    <i class="fas fa-comment-dots text-pink-300 mr-1"></i> {{ shop.note }}
+                                </p>
+
+                                <p v-if="shop.address" class="text-sm text-gray-400 mt-2 jp-text text-xs">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>{{ shop.address }}
+                                </p>
+
                                 <div class="mt-3 flex gap-2">
-                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + shop.name + ' ' + shop.address" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow-sm">
+                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + shop.name + (shop.address ? ' ' + shop.address : ' Kyoto')" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow-sm">
                                         <i class="fas fa-map-marker-alt"></i> 導航
                                     </a>
                                     <a v-if="shop.link" :href="shop.link" target="_blank" class="flex-1 bg-gray-100 text-gray-700 text-center py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-200">
-                                        <i class="fas fa-info-circle"></i> 資訊
+                                        <i class="fas fa-info-circle"></i> 參考資訊
                                     </a>
                                 </div>
                             </div>
@@ -174,7 +189,7 @@
                         <i class="fas fa-location-arrow mr-1"></i> 導航
                     </a>
                     <a href="https://wind.suzukihiro.tw/shijyo-superhotel/" target="_blank" class="flex-1 bg-indigo-50 text-indigo-700 border border-indigo-200 text-center py-3 rounded-lg font-bold shadow-sm hover:bg-indigo-100">
-                        <i class="fas fa-external-link-alt mr-1"></i> 介紹
+                        <i class="fas fa-external-link-alt mr-1"></i> 參考資訊
                     </a>
                 </div>
             </div>
@@ -268,7 +283,7 @@
                         type: 'transport', 
                         transport: 'JR Haruka (約80分)', 
                         link: 'https://www.instagram.com/reel/DNpk6SUR7MQ/?igsh=MXBhNzl6d2xka2pxNw%3D%3D',
-                        note: '查看購票/取票教學' 
+                        link_text: '查看購票/取票教學'
                     },
                     { time: '17:00', title: '移動：前往飯店', type: 'transport', transport: 'Uber (BLACK VAN)', note: '車程約 15 分鐘' },
                     { time: '18:00', title: '飯店 Check-in', type: 'hotel', desc: 'Super Hotel 四条河原町', address_jp: '京都府京都市中京区新京極通り四条上る中之町538-1', map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' },
@@ -276,7 +291,20 @@
                     { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day2: [
-                    { time: '08:00', title: '清水寺', type: 'sight', desc: '清水舞台、二年坂', transport: '計程車至「五条坂」或「清水道」頂端', map_query: 'Kiyomizu-dera' },
+                    { 
+                        time: '08:00', 
+                        title: '交通 Taxi', 
+                        type: 'transport', 
+                        note: '計程車至「五条坂」或「清水道」頂端' 
+                    },
+                    { 
+                        time: '08:20', 
+                        title: '清水寺', 
+                        type: 'sight', 
+                        desc: '清水舞台、二年坂', 
+                        map_query: 'Kiyomizu-dera',
+                        link: 'https://bugi.tw/2016/01/6.html'
+                    },
                     { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', desc: 'ひさご 親子丼 (11:30-16:00)', address_jp: '京都市東山区下河原町484', map_query: 'Hisago+Kyoto', link: 'https://bobbyfun.tw/2023-05-04-2359/' },
                     { time: '14:00', title: '伏見稻荷大社', type: 'sight', desc: '本殿 -> 千本鳥居 -> 奧社折返', note: '不用爬整座山！', transport: '搭乘 BUS 前往', map_query: 'Fushimi+Inari+Taisha' },
                     { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店 (訂位代號 #104024)', address_jp: '京都市中京区紙屋町674-2', map_query: 'Kyoto+Yakiniku+Hiro+Shijo+Kiyamachi', link: 'https://yakiniku-hiro.com/' },
@@ -306,7 +334,42 @@
             const mustVisit = {
                 shops: [
                     {
-                        area: '四條通',
+                        area: '清水寺鄰近',
+                        items: [
+                            {
+                                name: '二年坂：榻榻米星巴克',
+                                desc: '全世界唯一的「榻榻米星巴克」',
+                                address: '日本〒605-0826 Kyoto, Higashiyama Ward, Masuyacho, 349',
+                                link: 'https://angelala.tw/starbucks-kyoto/'
+                            },
+                            {
+                                name: '清水坂八ツ橋しゅ泡芙',
+                                address: '京都清水坂',
+                                note: '《食尚玩家》也介紹過的小吃甜品店，販售有咖啡、抹茶、抹茶冰淇淋、肉桂泡芙、冰淇淋泡芙。',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '比沙家 京都清水坂本店',
+                                address: '京都清水坂',
+                                note: '精心挑選含糖量大的栗子，講究天然無添加物',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '清水順正 おかべ家',
+                                address: '京都清水坂',
+                                note: '湯豆腐料理，體驗自己從豆乳火鍋中做出豆皮吃的喜悅',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '三年坂 有喜屋',
+                                address: '京都三年坂',
+                                note: '「親子丼」超強大，炸蝦親子丼的麵衣酥脆美味，鮮蝦彈牙可口；蛋花軟嫩滑口，搭配美味的日本米飯',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            }
+                        ]
+                    },
+                    {
+                        area: '四條通/購物',
                         items: [
                             { 
                                 name: 'SUGI藥局四条河原町店', 
