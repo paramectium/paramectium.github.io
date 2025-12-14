@@ -333,6 +333,41 @@
         </div>
     `;
 
+    // 1.12/26 嵐山返回京都車站的交通資訊
+    const ArashiyamaOutHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">區段</div>
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">細節</div>
+            <div class="font-bold border-b text-gray-600">預估時間</div>
+            
+            <div class="text-gray-700">Torokko 嵐山站 → JR 嵯峨嵐山站</div>
+            <div class="text-gray-700">步行</div>
+            <div class="text-gray-700">-</div>
+            <div class="text-gray-700">5-10 分鐘</div>
+
+            <div class="text-gray-700">JR 嵯峨嵐山站 → JR 京都站</div>
+            <div class="text-gray-700">JR 山陰本線 (嵯峨野線)</div>
+            <div class="text-gray-700">-</div>
+            <div class="text-gray-700">約 17 分鐘</div>
+        </div>
+    `;
+
+    // 2. 12/25 伏見稻荷返回祇園四條的交通資訊
+    const FushimiInariOutHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">區段</div>
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">細節</div>
+            <div class="font-bold border-b text-gray-600">預估時間</div>
+            
+            <div class="text-gray-700">伏見稻荷站 → 祇園四條站</div>
+            <div class="text-gray-700">京阪本線</div>
+            <div class="text-gray-700">特急/急行/準急皆可</div>
+            <div class="text-gray-700">約 10 - 15 分鐘</div>
+        </div>
+    `;
+
 
     createApp({
         setup() {
@@ -403,12 +438,17 @@
                         map_query: 'Fushimi+Inari+Taisha',
                         link: 'https://osaka.letsgojp.com/archives/72741/'
                     },
+                    // 2. 12/25 交通 電車：使用新的表格資訊
                     { 
                         time: '17:00', 
                         title: '交通 電車',
                         type: 'transport', 
-                        transport: '京阪本線：伏見稻荷站 → 祇園四条站', 
-                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' 
+                        transport: '京阪本線 (特急/急行/準急皆可)', 
+                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車',
+                        address_label: '交通資訊',
+                        address_icon: 'fa-subway', 
+                        is_schedule: true, 
+                        address_jp: FushimiInariOutHTML
                     },
                     { 
                         time: '17:30', 
@@ -451,12 +491,17 @@
                         type: 'sight', 
                         desc: '渡月橋、竹林之道' 
                     },
+                    // 1. 12/26 交通：返回京都車站：使用新的表格資訊
                     {
                         time: '15:30',
                         title: '交通：返回京都車站',
                         type: 'transport',
                         desc: '從 Torokko 嵐山站出發',
-                        transport: '步行(5-10分)至 JR 嵯峨嵐山站 → JR 山陰本線至 JR 京都站'
+                        transport: '步行 → JR 山陰本線 (嵯峨野線)',
+                        address_label: '交通資訊', 
+                        address_icon: 'fa-train', 
+                        is_schedule: true, 
+                        address_jp: ArashiyamaOutHTML 
                     },
                     {
                         time: '16:30',
@@ -534,7 +579,16 @@
                     { time: '20:00', title: '自由活動', type: 'other', desc: '最後採買機會' }
                 ],
                 day5: [
-                    { time: '09:00', title: '錦市場', type: 'sight', desc: '京都的廚房，吃吃喝喝', map_query: 'Nishiki+Market' },
+                    // 3. 12/28 錦市場：新增參考資訊連結
+                    { 
+                        time: '09:00', 
+                        title: '錦市場', 
+                        type: 'sight', 
+                        desc: '京都的廚房，吃吃喝喝', 
+                        map_query: 'Nishiki+Market',
+                        link: 'https://bobbyfun.tw/2024-01-09-2714/',
+                        link_text: '參考資訊'
+                    },
                     { time: '12:00', title: '前往關西機場', type: 'transport', transport: 'JR Haruka (約80分)', note: '記得提前買票/取票' },
                     { time: '16:15', title: '國泰 CX565 起飛', type: 'flight', desc: '18:30 抵達桃園機場' }
                 ]
