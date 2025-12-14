@@ -289,8 +289,23 @@
                         link: 'https://www.instagram.com/reel/DNpk6SUR7MQ/?igsh=MXBhNzl6d2xka2pxNw%3D%3D',
                         link_text: '查看購票/取票教學'
                     },
-                    { time: '17:00', title: '移動：前往飯店', type: 'transport', transport: 'Uber (BLACK VAN)', note: '車程約 15 分鐘' },
-                    { time: '18:00', title: '飯店 Check-in', type: 'hotel', desc: 'Super Hotel 四条河原町', address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1', map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' },
+                    // 修正 1. day1 住宿中的給司機看的導航資訊，移到 移動：前往飯店內
+                    { 
+                        time: '17:00', 
+                        title: '移動：前往飯店', 
+                        type: 'transport', 
+                        transport: 'Uber (BLACK VAN)', 
+                        note: '車程約 15 分鐘',
+                        address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1' // 導航資訊移入
+                    },
+                    { 
+                        time: '18:00', 
+                        title: '飯店 Check-in', 
+                        type: 'hotel', 
+                        desc: 'Super Hotel 四条河原町', 
+                        // address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1', // 導航資訊已移出
+                        map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' 
+                    },
                     { time: '18:30', title: '晚餐：(待定)', type: 'food', desc: '可能在京都車站或四條通', note: '視情況調整' },
                     { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
@@ -331,23 +346,23 @@
                         map_query: 'Fushimi+Inari+Taisha',
                         link: 'https://osaka.letsgojp.com/archives/72741/' // 參考資訊更新
                     },
-                    // 2. 伏見稻荷大社下方新增住宿
+                    // 修正 2. day2 交通 電車應該移到 伏見稻荷大社 跟住宿之間
                     { 
                         time: '17:00', 
+                        title: '交通 電車', // 標題修正為交通 電車
+                        type: 'transport', 
+                        transport: '京阪本線：伏見稻荷站 → 祇園四条站', // 電車詳細資訊
+                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' // 備註修正
+                    },
+                    { 
+                        time: '17:30', // 時間微調
                         title: 'Super Hotel 京都・四条河原町店', 
                         type: 'hotel', 
-                        desc: '入住與休息', 
-                        transport: '電車 (京阪本線：伏見稻荷站 → 祇園四条站)',
-                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' 
+                        desc: '回飯店休息/放東西', // 描述修正
+                        // transport: '電車 (京阪本線：伏見稻荷站 → 祇園四条站)', // 交通方式已移到上一個項目
+                        // note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' // 備註已移到上一個項目
                     },
-                    // 2. 飯店與晚餐間新增電車交通
-                    { 
-                        time: '18:00', 
-                        title: '交通 電車', 
-                        type: 'transport', 
-                        transport: '步行 (約10分鐘) 或計程車至晚餐地點', 
-                        note: '飯店位於祇園四條站附近，晚餐地點亦在附近，可步行'
-                    },
+                    // 原本 18:00 的「交通 電車」項目已刪除
                     { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店 (訂位代號 #104024)', address_jp: '京都市中京区紙屋町674-2', map_query: 'Kyoto+Yakiniku+Hiro+Shijo+Kiyamachi', link: 'https://yakiniku-hiro.com/' },
                     { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
