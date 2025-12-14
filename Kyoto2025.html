@@ -26,39 +26,57 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         /* 增加給司機看的文字大小 */
         .driver-text { font-size: 1.25rem; }
+        
+        /* RWD 調整：行程卡片在平板/桌機上圖示區塊更寬 */
+        @media (min-width: 640px) {
+            .card .icon-col {
+                width: 100px; 
+            }
+            .card .content-col {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div id="app" class="max-w-md mx-auto bg-gray-50 min-h-screen shadow-lg pb-24 relative">
+<div id="app" class="max-w-3xl mx-auto bg-gray-50 min-h-screen shadow-lg pb-24 relative">
     
-    <header class="bg-blue-600 text-white p-5 rounded-b-3xl shadow-md sticky top-0 z-50">
-        <h1 class="text-2xl font-bold">🇯🇵 京都聖誕五日遊</h1>
+    <header class="bg-blue-600 text-white p-5 rounded-b-3xl shadow-lg sticky top-0 z-50">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold">🇯🇵 京都聖誕五日遊</h1>
+        </div>
         <p class="text-blue-100 text-sm mt-1">12/24 (三) - 12/28 (日)</p>
     </header>
 
-    <div class="bg-white border-b sticky top-[84px] z-40 shadow-sm">
-        <div class="flex overflow-x-auto no-scrollbar py-2 px-1 space-x-2">
-            <button v-for="(dateLabel, index) in dateLabels" :key="index" 
-                @click="currentTab = 'day'+(index+1)" 
-                :class="currentTab === 'day'+(index+1) ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-500'"
-                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                {{ dateLabel }}
-            </button>
-            <button @click="currentTab = 'must'" 
-                :class="currentTab === 'must' ? 'bg-pink-600 text-white shadow-md' : 'bg-pink-50 text-pink-600'"
-                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                必逛/餐廳
-            </button>
-            <button @click="currentTab = 'info'" 
-                :class="currentTab === 'info' ? 'bg-indigo-600 text-white shadow-md' : 'bg-indigo-50 text-indigo-600'"
-                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                住宿/航班
-            </button>
-            <button @click="currentTab = 'checklist'" 
-                :class="currentTab === 'checklist' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-50 text-emerald-600'"
-                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                行李清單
+    <div class="bg-white border-b sticky top-[98px] z-40 shadow-sm">
+        <div class="flex overflow-x-auto no-scrollbar py-3 px-3 space-x-2 justify-between items-center">
+            <div class="flex space-x-2 flex-shrink-0">
+                <button v-for="(dateLabel, index) in dateLabels" :key="index" 
+                    @click="currentTab = 'day'+(index+1)" 
+                    :class="currentTab === 'day'+(index+1) ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-500'"
+                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                    {{ dateLabel }}
+                </button>
+                <button @click="currentTab = 'must'" 
+                    :class="currentTab === 'must' ? 'bg-pink-600 text-white shadow-md' : 'bg-pink-50 text-pink-600'"
+                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                    <i class="fas fa-store"></i> 必逛/餐廳
+                </button>
+                <button @click="currentTab = 'info'" 
+                    :class="currentTab === 'info' ? 'bg-indigo-600 text-white shadow-md' : 'bg-indigo-50 text-indigo-600'"
+                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                    <i class="fas fa-info-circle"></i> 住宿/航班
+                </button>
+                <button @click="currentTab = 'checklist'" 
+                    :class="currentTab === 'checklist' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-50 text-emerald-600'"
+                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                    <i class="fas fa-check-square"></i> 清單
+                </button>
+            </div>
+             <button @click="refreshApp" 
+                class="flex-shrink-0 px-3 py-2 rounded-full text-xs font-bold text-gray-500 bg-gray-100 border border-gray-200 hover:bg-gray-200 transition-colors ml-4">
+                <i class="fas fa-sync-alt mr-1"></i> 重新載入
             </button>
         </div>
     </div>
@@ -71,23 +89,23 @@
                     <p>行程規劃中...</p>
                 </div>
                 
-                <div v-for="(item, index) in schedule['day'+d]" :key="index" class="card bg-white rounded-xl shadow overflow-hidden flex min-h-[100px]">
+                <div v-for="(item, index) in schedule['day'+d]" :key="index" class="card bg-white rounded-xl shadow overflow-hidden flex min-h-[100px] border border-gray-100">
                     
-                    <div :class="getTypeColor(item.type)" class="w-20 flex-shrink-0 flex flex-col items-center justify-center text-white p-1 text-center">
-                        <i :class="getIcon(item.type)" class="text-xl mb-1"></i>
+                    <div :class="getTypeColor(item.type)" class="icon-col w-20 sm:w-24 flex-shrink-0 flex flex-col items-center justify-center text-white p-1 text-center">
+                        <i :class="getIcon(item.type)" class="text-xl sm:text-2xl mb-1"></i>
                         <span class="text-xs font-bold break-words w-full">{{ getTypeLabel(item.type) }}</span>
                     </div>
 
-                    <div class="flex-1 p-3 flex flex-col justify-center">
+                    <div class="content-col flex-1 p-3 sm:p-4 flex flex-col justify-center">
                         <div class="flex justify-between items-start mb-1">
                             <span class="text-sm font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{{ item.time }}</span>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-800 leading-tight mb-2">{{ item.title }}</h3>
+                        <h3 class="text-lg font-bold text-gray-800 leading-tight mb-2 sm:text-xl">{{ item.title }}</h3>
                         
-                        <div class="text-sm text-gray-600 space-y-1.5">
-                            <p v-if="item.desc">{{ item.desc }}</p>
+                        <div class="text-sm text-gray-600 space-y-2">
+                            <p v-if="item.desc" class="text-gray-700">{{ item.desc }}</p>
                             
-                            <p v-if="item.transport" class="text-blue-700 bg-blue-50 px-2 py-1 rounded text-xs inline-block">
+                            <p v-if="item.transport" class="text-blue-700 bg-blue-50 px-2 py-1 rounded text-xs inline-block font-medium">
                                 <i class="fas fa-arrow-right mr-1"></i> {{ item.transport }}
                             </p>
 
@@ -127,14 +145,14 @@
             
             <div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-pink-500">必逛景點/商店</h3>
-                <div class="space-y-6">
-                    <div v-for="(area, areaIdx) in mustVisit.shops" :key="areaIdx">
-                        <h4 class="font-bold text-lg text-gray-700 mb-2 pl-1 flex items-center">
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div v-for="(area, areaIdx) in mustVisit.shops" :key="areaIdx" class="sm:col-span-2">
+                        <h4 class="font-bold text-lg text-gray-700 mb-3 mt-4 pl-1 flex items-center border-b border-gray-200 pb-1">
                             <i class="fas fa-map-pin text-pink-500 mr-2"></i> {{ area.area }}
                         </h4>
                         
-                        <div class="space-y-3">
-                            <div v-for="(shop, idx) in area.items" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 ml-2">
+                        <div class="grid md:grid-cols-3 sm:grid-cols-2 gap-3">
+                            <div v-for="(shop, idx) in area.items" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                                 <div class="flex justify-between items-start">
                                     <h4 class="font-bold text-lg text-pink-600">{{ shop.name }}</h4>
                                 </div>
@@ -171,11 +189,11 @@
 
             <div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-orange-500">推薦餐廳</h3>
-                <div class="space-y-4">
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <div v-for="(food, idx) in mustVisit.food" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                         <h4 class="font-bold text-lg text-orange-600">{{ food.name }}</h4>
                         <p class="text-sm text-gray-600 mt-1">{{ food.desc }}</p>
-                        <a :href="'https://www.google.com/maps/search/?api=1&query=' + food.name" target="_blank" class="block mt-2 text-center bg-gray-100 py-2 rounded text-sm font-bold text-gray-600">
+                        <a :href="'https://www.google.com/maps/search/?api=1&query=' + food.name" target="_blank" class="block mt-2 text-center bg-gray-100 py-2 rounded text-sm font-bold text-gray-600 hover:bg-gray-200">
                             查看位置
                         </a>
                     </div>
@@ -183,8 +201,8 @@
             </div>
         </div>
 
-        <div v-if="currentTab === 'info'" class="space-y-4">
-            <div class="bg-white p-5 rounded-xl shadow border-l-8 border-indigo-500">
+        <div v-if="currentTab === 'info'" class="space-y-4 grid sm:grid-cols-2 gap-4">
+            <div class="bg-white p-5 rounded-xl shadow border-l-8 border-indigo-500 sm:col-span-2">
                 <h3 class="text-lg font-bold text-gray-500 mb-1">住宿飯店</h3>
                 <p class="text-xl font-bold text-indigo-700">Super Hotel 京都・四条河原町店</p>
                 <div class="my-4 bg-gray-50 p-3 rounded border border-gray-200">
@@ -261,7 +279,7 @@
                     <div class="space-y-2">
                         <label v-for="(item, i) in items" :key="i" class="flex items-start space-x-3 bg-white p-3 rounded-lg shadow-sm border border-emerald-100 active:bg-emerald-50 transition-colors">
                             <input type="checkbox" class="form-checkbox h-5 w-5 mt-0.5 text-emerald-600 rounded focus:ring-emerald-500 flex-shrink-0">
-                            <span class="text-gray-700 text-sm font-medium leading-tight" :class="{'text-red-500 font-bold': item.includes('!') || item.includes('必要')}">{{ item }}</span>
+                            <span class="text-gray-700 text-sm font-medium leading-tight">{{ item }}</span>
                         </label>
                     </div>
                 </div>
@@ -374,6 +392,12 @@
             const currentTab = ref('day1');
             const dateLabels = ['12/24 (三)', '12/25 (四)', '12/26 (五)', '12/27 (六)', '12/28 (日)'];
 
+            // 新增一個手動重載頁面的方法
+            const refreshApp = () => {
+                location.reload();
+            };
+
+
             const schedule = {
                 day1: [
                     { time: '07:30', title: '前往桃園機場', type: 'transport', desc: '集合並辦理登機手續' },
@@ -405,7 +429,6 @@
                     { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day2: [
-                    // 新增 12/25 早餐
                     { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
                     { 
                         time: '08:00', 
@@ -461,7 +484,6 @@
                     { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day3: [
-                    // 新增 12/26 早餐
                     { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
                     { 
                         time: '08:00', 
@@ -532,7 +554,6 @@
                     }
                 ],
                 day4: [
-                    // 新增 12/27 早餐
                     { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
                     { 
                         time: '08:00', 
@@ -580,6 +601,7 @@
                     { time: '20:00', title: '自由活動', type: 'other', desc: '最後採買機會' }
                 ],
                 day5: [
+                    { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
                     { 
                         time: '09:00', 
                         title: '錦市場', 
@@ -694,7 +716,7 @@
                 '🎒 上飛機隨身包 (隨身攜帶)': [
                     '手機', 'SIM卡 (網路)', '錢包 (外幣、些許台幣)', '交通卡', 
                     '護照 (正本)', '簽證', '電子機票', '訂房資料', '旅遊票券',
-                    '衛生紙/濕紙巾', '摺疊雨傘', '行動電源 (不可托運！)', '充電線', '耳機', '耳塞 (超級必要)'
+                    '衛生紙/濕紙巾', '摺疊雨傘', '行動電源 (不可托運！)', '充電線', '耳機', '耳塞'
                 ],
                 '📄 托運 - 衣物類': [
                     '足夠衣物', '內衣褲', '襪子', '禦寒外套'
@@ -754,7 +776,8 @@
                 checkList,
                 getTypeColor,
                 getIcon,
-                getTypeLabel
+                getTypeLabel,
+                refreshApp // 導出新的方法
             };
         }
     }).mount('#app');
