@@ -34,16 +34,16 @@
     
     <header class="bg-blue-600 text-white p-5 rounded-b-3xl shadow-md sticky top-0 z-50">
         <h1 class="text-2xl font-bold">🇯🇵 京都聖誕五日遊</h1>
-        <p class="text-blue-100 text-sm mt-1">12/24 (二) - 12/28 (六)</p>
+        <p class="text-blue-100 text-sm mt-1">12/24 (三) - 12/28 (日)</p>
     </header>
 
     <div class="bg-white border-b sticky top-[84px] z-40 shadow-sm">
         <div class="flex overflow-x-auto no-scrollbar py-2 px-1 space-x-2">
-            <button v-for="d in 5" :key="d" 
-                @click="currentTab = 'day'+d" 
-                :class="currentTab === 'day'+d ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-500'"
+            <button v-for="(dateLabel, index) in dateLabels" :key="index" 
+                @click="currentTab = 'day'+(index+1)" 
+                :class="currentTab === 'day'+(index+1) ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-500'"
                 class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                Day {{ d }}
+                {{ dateLabel }}
             </button>
             <button @click="currentTab = 'must'" 
                 :class="currentTab === 'must' ? 'bg-pink-600 text-white shadow-md' : 'bg-pink-50 text-pink-600'"
@@ -115,7 +115,7 @@
                 </div>
                 
                 <div class="text-center text-xs text-gray-400 mt-6 mb-2">
-                    End of Day {{ d }}
+                    End of {{ dateLabels[d-1] }}
                 </div>
             </div>
         </div>
@@ -276,6 +276,8 @@
     createApp({
         setup() {
             const currentTab = ref('day1');
+            // 新增日期標籤陣列
+            const dateLabels = ['12/24 (三)', '12/25 (四)', '12/26 (五)', '12/27 (六)', '12/28 (日)'];
 
             const schedule = {
                 day1: [
@@ -289,28 +291,25 @@
                         link: 'https://www.instagram.com/reel/DNpk6SUR7MQ/?igsh=MXBhNzl6d2xka2pxNw%3D%3D',
                         link_text: '查看購票/取票教學'
                     },
-                    // 修正 1. day1 住宿中的給司機看的導航資訊，移到 移動：前往飯店內
                     { 
                         time: '17:00', 
                         title: '移動：前往飯店', 
                         type: 'transport', 
                         transport: 'Uber (BLACK VAN)', 
                         note: '車程約 15 分鐘',
-                        address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1' // 導航資訊移入
+                        address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1'
                     },
                     { 
                         time: '18:00', 
                         title: '飯店 Check-in', 
                         type: 'hotel', 
                         desc: 'Super Hotel 四条河原町', 
-                        // address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1', // 導航資訊已移出
                         map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' 
                     },
                     { time: '18:30', title: '晚餐：(待定)', type: 'food', desc: '可能在京都車站或四條通', note: '視情況調整' },
                     { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day2: [
-                    // 1. 修改計程車目的地為清水道頂端，並新增給司機看的日文和地址
                     { 
                         time: '08:00', 
                         title: '交通 Taxi', 
@@ -327,7 +326,6 @@
                         link: 'https://www.bugi.tw/2016/01/6.html'
                     },
                     { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', desc: 'ひさご 親子丼 (11:30-16:00)', address_jp: '京都市東山区下河原町484', map_query: 'Hisago+Kyoto', link: 'https://bobbyfun.tw/2023-05-04-2359/' },
-                    // 2. 新增午餐與伏見稻荷大社間的 TAXI 交通方式
                     { 
                         time: '13:30', 
                         title: '交通 Taxi', 
@@ -336,7 +334,6 @@
                         note: '從葫蘆親子丼前往伏見稻荷大社',
                         address_jp: '<strong>伏見稲荷大社（ふしみいなりたいしゃ）</strong><br>〒612-0882 京都府京都市伏見区深草藪之内町６８'
                     },
-                    // 1. 伏見稻荷大社更新連結
                     { 
                         time: '14:00', 
                         title: '伏見稻荷大社', 
@@ -344,35 +341,86 @@
                         desc: '本殿 -> 千本鳥居 -> 奧社折返', 
                         note: '不用爬整座山！', 
                         map_query: 'Fushimi+Inari+Taisha',
-                        link: 'https://osaka.letsgojp.com/archives/72741/' // 參考資訊更新
+                        link: 'https://osaka.letsgojp.com/archives/72741/'
                     },
-                    // 修正 2. day2 交通 電車應該移到 伏見稻荷大社 跟住宿之間
                     { 
                         time: '17:00', 
-                        title: '交通 電車', // 標題修正為交通 電車
+                        title: '交通 電車',
                         type: 'transport', 
-                        transport: '京阪本線：伏見稻荷站 → 祇園四条站', // 電車詳細資訊
-                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' // 備註修正
+                        transport: '京阪本線：伏見稻荷站 → 祇園四条站', 
+                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' 
                     },
                     { 
-                        time: '17:30', // 時間微調
+                        time: '17:30', 
                         title: 'Super Hotel 京都・四条河原町店', 
                         type: 'hotel', 
-                        desc: '回飯店休息/放東西', // 描述修正
-                        // transport: '電車 (京阪本線：伏見稻荷站 → 祇園四条站)', // 交通方式已移到上一個項目
-                        // note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' // 備註已移到上一個項目
+                        desc: '回飯店休息/放東西', 
                     },
-                    // 原本 18:00 的「交通 電車」項目已刪除
                     { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店 (訂位代號 #104024)', address_jp: '京都市中京区紙屋町674-2', map_query: 'Kyoto+Yakiniku+Hiro+Shijo+Kiyamachi', link: 'https://yakiniku-hiro.com/' },
                     { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day3: [
-                    { time: '08:00', title: '移動：前往京都車站', type: 'transport', desc: '準備前往嵐山' },
-                    { time: '08:30', title: '移動：前往龜岡', type: 'transport', transport: 'JR 嵯峨野線至馬堀站', desc: '下車後步行10分鐘至小火車龜岡站' },
-                    { time: '09:30', title: '嵐山小火車', type: 'sight', desc: '龜岡 -> 嵐山', note: '欣賞沿途風景' },
-                    { time: '12:00', title: '午餐：嵐山よしむら', type: 'food', desc: 'Yoshimura 蕎麥麵', map_query: 'Arashiyama+Yoshimura' },
-                    { time: '14:00', title: '嵐山散策', type: 'sight', desc: '渡月橋、竹林之道' },
-                    { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
+                    // Day 3 行程依需求修正
+                    { 
+                        time: '08:00', 
+                        title: '交通：前往嵐山', 
+                        type: 'transport', 
+                        desc: '步行至地鐵四條站（約 10-15 分鐘）',
+                        transport: '地鐵至 JR 京都站 → JR 嵯峨野線 直達 JR 馬堀站',
+                        note: '從 JR 馬堀站步行至小火車起點站「トロッコ龜岡站」'
+                    },
+                    { 
+                        time: '09:30', 
+                        title: '嵐山小火車', 
+                        type: 'sight', 
+                        desc: '龜岡 -> 嵐山', 
+                        note: '09:30 至 09:50' 
+                    },
+                    { 
+                        time: '11:30', 
+                        title: '午餐：嵐山よしむら', 
+                        type: 'food', 
+                        desc: 'Yoshimura 蕎麥麵', 
+                        map_query: 'Arashiyama+Yoshimura' 
+                    },
+                    { 
+                        time: '13:00', 
+                        title: '嵐山散策', 
+                        type: 'sight', 
+                        desc: '渡月橋、竹林之道' 
+                    },
+                    // 新增交通：回程
+                    {
+                        time: '15:30',
+                        title: '交通：返回京都車站',
+                        type: 'transport',
+                        desc: '從 Torokko 嵐山站出發',
+                        transport: '步行(5-10分)至 JR 嵯峨嵐山站 → JR 山陰本線至 JR 京都站'
+                    },
+                    // 新增餐飲：拉麵小路
+                    {
+                        time: '16:30',
+                        title: '餐飲：京都車站（拉麵小路）',
+                        type: 'food',
+                        desc: '京都車站逛街',
+                        note: '京都駅ビル 10F'
+                    },
+                    // 新增交通：公車
+                    {
+                        time: '19:00',
+                        title: '交通：返回市區',
+                        type: 'transport',
+                        desc: '京都站 → 四条河原町',
+                        transport: '公車 4、17、205 (甲或乙)',
+                        note: '從 A2 乘場上車，費用230日圓。皆可到達，飯店就在下車點步行1-2分鐘處。'
+                    },
+                    // 新增飯店
+                    { 
+                        time: '19:30', 
+                        title: 'Super Hotel 京都・四条河原町店', 
+                        type: 'hotel', 
+                        desc: '回飯店休息/放東西' 
+                    }
                 ],
                 day4: [
                     { time: '08:00', title: '奈良一日遊', type: 'sight', desc: '東大寺、奈良公園餵鹿', transport: '搭乘近鐵奈良線', map_query: 'Nara+Park' },
@@ -554,7 +602,7 @@
                 return map[type] || 'fas fa-circle';
             };
 
-            return { currentTab, schedule, mustVisit, checkList, getTypeColor, getTypeLabel, getIcon };
+            return { currentTab, dateLabels, schedule, mustVisit, checkList, getTypeColor, getTypeLabel, getIcon };
         }
     }).mount('#app');
 </script>
