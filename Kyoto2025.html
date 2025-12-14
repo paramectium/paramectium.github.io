@@ -45,38 +45,36 @@
     <header class="bg-blue-600 text-white p-5 rounded-b-3xl shadow-lg sticky top-0 z-50">
         <div class="flex justify-between items-center">
             <h1 class="text-2xl font-bold">🇯🇵 京都聖誕五日遊</h1>
+            <button @click="refreshApp" 
+                class="px-3 py-1.5 rounded-full text-xs font-bold bg-white/20 hover:bg-white/30 transition-colors border border-white/30">
+                <i class="fas fa-sync-alt mr-1"></i> 重新載入
+            </button>
         </div>
         <p class="text-blue-100 text-sm mt-1">12/24 (三) - 12/28 (日)</p>
     </header>
 
     <div class="bg-white border-b sticky top-[98px] z-40 shadow-sm">
-        <div class="flex overflow-x-auto no-scrollbar py-3 px-3 space-x-2 justify-between items-center">
-            <div class="flex space-x-2 flex-shrink-0">
-                <button v-for="(dateLabel, index) in dateLabels" :key="index" 
-                    @click="currentTab = 'day'+(index+1)" 
-                    :class="currentTab === 'day'+(index+1) ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-500'"
-                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                    {{ dateLabel }}
-                </button>
-                <button @click="currentTab = 'must'" 
-                    :class="currentTab === 'must' ? 'bg-pink-600 text-white shadow-md' : 'bg-pink-50 text-pink-600'"
-                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                    <i class="fas fa-store"></i> 必逛/餐廳
-                </button>
-                <button @click="currentTab = 'info'" 
-                    :class="currentTab === 'info' ? 'bg-indigo-600 text-white shadow-md' : 'bg-indigo-50 text-indigo-600'"
-                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                    <i class="fas fa-info-circle"></i> 住宿/航班
-                </button>
-                <button @click="currentTab = 'checklist'" 
-                    :class="currentTab === 'checklist' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-50 text-emerald-600'"
-                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
-                    <i class="fas fa-check-square"></i> 清單
-                </button>
-            </div>
-             <button @click="refreshApp" 
-                class="flex-shrink-0 px-3 py-2 rounded-full text-xs font-bold text-gray-500 bg-gray-100 border border-gray-200 hover:bg-gray-200 transition-colors ml-4">
-                <i class="fas fa-sync-alt mr-1"></i> 重新載入
+        <div class="flex overflow-x-auto no-scrollbar py-3 px-3 space-x-2">
+            <button v-for="(dateLabel, index) in dateLabels" :key="index" 
+                @click="currentTab = 'day'+(index+1)" 
+                :class="currentTab === 'day'+(index+1) ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-500'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                {{ dateLabel }}
+            </button>
+            <button @click="currentTab = 'must'" 
+                :class="currentTab === 'must' ? 'bg-pink-600 text-white shadow-md' : 'bg-pink-50 text-pink-600'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                <i class="fas fa-store"></i> 必逛/餐廳
+            </button>
+            <button @click="currentTab = 'info'" 
+                :class="currentTab === 'info' ? 'bg-indigo-600 text-white shadow-md' : 'bg-indigo-50 text-indigo-600'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                <i class="fas fa-info-circle"></i> 住宿/航班
+            </button>
+            <button @click="currentTab = 'checklist'" 
+                :class="currentTab === 'checklist' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-50 text-emerald-600'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                <i class="fas fa-check-square"></i> 清單
             </button>
         </div>
     </div>
@@ -213,10 +211,7 @@
                     <a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Kyoto+Shijokawaramachi" target="_blank" class="flex-1 bg-indigo-600 text-white text-center py-3 rounded-lg font-bold shadow hover:bg-indigo-700">
                         <i class="fas fa-location-arrow mr-1"></i> 導航
                     </a>
-                    <a href="https://wind.suzukihiro.tw/shijyo-superhotel/" target="_blank" class="flex-1 bg-indigo-50 text-indigo-700 border border-indigo-200 text-center py-3 rounded-lg font-bold shadow-sm hover:bg-indigo-100">
-                        <i class="fas fa-external-link-alt mr-1"></i> 參考資訊
-                    </a>
-                </div>
+                    </div>
             </div>
 
             <div class="bg-white p-5 rounded-xl shadow border-l-8 border-sky-500">
@@ -418,12 +413,15 @@
                         note: '車程約 15 分鐘',
                         address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1'
                     },
+                    // 調整 2: 住宿參考資訊移至此處
                     { 
                         time: '18:00', 
                         title: '飯店 Check-in', 
                         type: 'hotel', 
                         desc: 'Super Hotel 四条河原町', 
-                        map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' 
+                        map_query: 'Super+Hotel+Kyoto+Shijokawaramachi',
+                        link: 'https://wind.suzukihiro.tw/shijyo-superhotel/',
+                        link_text: '參考資訊'
                     },
                     { time: '18:30', title: '晚餐：(待定)', type: 'food', desc: '可能在京都車站或四條通', note: '視情況調整' },
                     { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
@@ -652,8 +650,7 @@
                             },
                             {
                                 name: '三年坂：有喜屋',
-                                address: '京都三年坂',
-                                note: '「親子丼」超強大，炸蝦親子丼的麵衣酥脆美味，鮮蝦彈牙可口；蛋花軟嫩滑口，搭配美味的日本米飯',
+                                desc: '「親子丼」超強大，炸蝦親子丼的麵衣酥脆美味，鮮蝦彈牙可口；蛋花軟嫩滑口，搭配美味的日本米飯',
                                 link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
                             },
                             {
@@ -777,7 +774,7 @@
                 getTypeColor,
                 getIcon,
                 getTypeLabel,
-                refreshApp // 導出新的方法
+                refreshApp 
             };
         }
     }).mount('#app');
