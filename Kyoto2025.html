@@ -276,6 +276,64 @@
 <script>
     const { createApp, ref } = Vue;
 
+    const BusTableHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">乘場</div>
+            <div class="font-bold border-b text-gray-600">預估搭乘</div>
+            <div class="font-bold border-b text-gray-600">總時間</div>
+            
+            <div class="font-bold text-blue-600">4號</div>
+            <div>A2</div>
+            <div>約 12-14分</div>
+            <div>約 25分</div>
+
+            <div class="font-bold text-blue-600">17號</div>
+            <div>A2/D2</div>
+            <div>約 10-15分</div>
+            <div>約 20分</div>
+
+            <div class="font-bold text-blue-600">205</div>
+            <div>A2</div>
+            <div>約 12-14分</div>
+            <div>約 25分</div>
+        </div>
+    `;
+
+    const NaraTrafficInHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">區段</div>
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">細節</div>
+            <div class="font-bold border-b text-gray-600">預估搭乘時間</div>
+            
+            <div class="text-gray-700">飯店 → JR 京都站</div>
+            <div class="text-gray-700">公車</div>
+            <div class="text-gray-700">4, 17, 205 號</div>
+            <div class="text-gray-700">約 15-25 分鐘</div>
+
+            <div class="text-gray-700">JR 京都站 → JR 奈良站</div>
+            <div class="text-gray-700">JR 奈良線</div>
+            <div class="text-gray-700">快速列車</div>
+            <div class="text-gray-700">約 45-50 分鐘</div>
+        </div>
+    `;
+
+    const NaraTrafficOutHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">區段</div>
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">細節</div>
+            <div class="font-bold border-b text-gray-600">預估搭乘時間</div>
+            
+            <div class="text-gray-700">JR奈良站 → JR 京都站</div>
+            <div class="text-gray-700">JR 奈良線</div>
+            <div class="text-gray-700">快速列車</div>
+            <div class="text-gray-700">約 45-50 分鐘</div>
+        </div>
+    `;
+
+
     createApp({
         setup() {
             const currentTab = ref('day1');
@@ -374,9 +432,11 @@
                         time: '09:30', 
                         title: '嵐山小火車', 
                         type: 'sight', 
-                        desc: '龜岡 -> 嵐山', 
-                        note: '09:30 至 09:50',
-                        link: 'https://nicklee.tw/447/arashiyama-torokko/' // 新增參考資訊
+                        desc: '搭乘區間：龜岡 (起點) -> 嵐山', 
+                        note: '發車時間：09:30 至 09:50',
+                        map_query: 'トロッコ亀岡駅', // 需求 1: 新增龜岡站地圖
+                        link: 'https://nicklee.tw/447/arashiyama-torokko/', // 新增參考資訊
+                        link_text: '購票/乘車資訊'
                     },
                     { 
                         time: '11:30', 
@@ -415,29 +475,7 @@
                         address_label: '公車搭乘資訊', // 自定義標籤
                         address_icon: 'fa-bus', // 自定義圖示
                         is_schedule: true, // 標記為表格內容，使用較小字體
-                        address_jp: `
-                            <div class="grid grid-cols-4 gap-1 text-sm text-left">
-                                <div class="font-bold border-b text-gray-600">路線</div>
-                                <div class="font-bold border-b text-gray-600">乘場</div>
-                                <div class="font-bold border-b text-gray-600">時間</div>
-                                <div class="font-bold border-b text-gray-600">頻率</div>
-                                
-                                <div class="font-bold text-blue-600">4號</div>
-                                <div>A2</div>
-                                <div>12-14分</div>
-                                <div>10-15分</div>
-
-                                <div class="font-bold text-blue-600">17號</div>
-                                <div>A2/D2</div>
-                                <div>10-15分</div>
-                                <div>10分</div>
-
-                                <div class="font-bold text-blue-600">205</div>
-                                <div>A2</div>
-                                <div>12-14分</div>
-                                <div>10分</div>
-                            </div>
-                        `
+                        address_jp: BusTableHTML // 使用上方定義的 HTML
                     },
                     { 
                         time: '19:30', 
@@ -447,9 +485,52 @@
                     }
                 ],
                 day4: [
-                    { time: '08:00', title: '奈良一日遊', type: 'sight', desc: '東大寺、奈良公園餵鹿', transport: '搭乘近鐵奈良線', map_query: 'Nara+Park' },
-                    { time: '12:00', title: '午餐', type: 'food', desc: '奈良周邊 (待定)' },
-                    { time: '15:00', title: '京都 teamLab', type: 'sight', desc: '沉浸式光影展', map_query: 'teamLab+Kyoto' },
+                    // 需求 2: 12/27（六）新增交通
+                    { 
+                        time: '08:00', 
+                        title: '交通：前往奈良', 
+                        type: 'transport', 
+                        transport: '公車轉 JR 奈良線 (快速列車)', 
+                        note: '總時間：約 60 - 75 分鐘',
+                        address_label: '交通資訊', 
+                        address_icon: 'fa-subway', 
+                        is_schedule: true, 
+                        address_jp: NaraTrafficInHTML 
+                    },
+                    { 
+                        time: '09:30', 
+                        title: '奈良公園/東大寺', 
+                        type: 'sight', 
+                        desc: '與奈良鹿互動、世界最大木造建築', 
+                        map_query: 'JR奈良駅', // 需求 2: 新增奈良站地圖導航
+                        note: 'JR奈良站距奈良公園步行約 20 分鐘 (或搭公車)' 
+                    },
+                    { time: '12:00', title: '午餐', type: 'food', desc: '奈良周邊 (待定)', note: '午餐後準備回京都' },
+                    // 需求 3: 12/27（六）午餐後新增交通
+                    { 
+                        time: '14:00', 
+                        title: '交通：返回京都', 
+                        type: 'transport', 
+                        transport: 'JR 奈良線 (快速列車)', 
+                        note: '預計搭乘時間：約 45 - 50 分鐘',
+                        address_label: 'JR 奈良站資訊', 
+                        address_icon: 'fa-train', 
+                        is_schedule: true, 
+                        address_jp: NaraTrafficOutHTML 
+                    },
+                    { time: '15:30', title: '京都 teamLab', type: 'sight', desc: '沉浸式光影展', map_query: 'teamLab+Kyoto' },
+                    // 需求 4: 12/27（六）teamLab 後新增交通
+                    {
+                        time: '17:30',
+                        title: '交通：返回市區',
+                        type: 'transport',
+                        desc: '京都站 → 四条河原町 (費用230日圓)',
+                        transport: '公車 4、17、205 (甲或乙)',
+                        address_label: '公車搭乘資訊', // 自定義標籤
+                        address_icon: 'fa-bus', // 自定義圖示
+                        is_schedule: true, // 標記為表格內容，使用較小字體
+                        address_jp: BusTableHTML // 重複使用 Day3 的公車表格
+                    },
                     { time: '20:00', title: '自由活動', type: 'other', desc: '最後採買機會' }
                 ],
                 day5: [
@@ -587,7 +668,7 @@
             const getTypeColor = (type) => {
                 const map = {
                     flight: 'bg-sky-500',
-                    transport: 'bg-blue-500',
+                    transport: 'bg-blue-600', // 交通改深一點
                     food: 'bg-orange-500',
                     sight: 'bg-green-600',
                     shop: 'bg-pink-500',
@@ -595,7 +676,21 @@
                     free: 'bg-purple-500',
                     other: 'bg-gray-500' 
                 };
-                return map[type] || 'bg-gray-400';
+                return map[type] || 'bg-gray-500';
+            };
+
+            const getIcon = (type) => {
+                const map = {
+                    flight: 'fas fa-plane',
+                    transport: 'fas fa-train',
+                    food: 'fas fa-utensils',
+                    sight: 'fas fa-mountain',
+                    shop: 'fas fa-shopping-bag',
+                    hotel: 'fas fa-bed',
+                    free: 'fas fa-leaf',
+                    other: 'fas fa-ellipsis-h' 
+                };
+                return map[type] || 'fas fa-question';
             };
 
             const getTypeLabel = (type) => {
@@ -606,27 +701,22 @@
                     sight: '景點',
                     shop: '購物',
                     hotel: '住宿',
-                    free: '自由',
+                    free: '自由活動',
                     other: '其他'
                 };
-                return map[type] || '其他';
+                return map[type] || '未知';
             };
 
-            const getIcon = (type) => {
-                const map = {
-                    flight: 'fas fa-plane',
-                    transport: 'fas fa-subway',
-                    food: 'fas fa-utensils',
-                    sight: 'fas fa-camera',
-                    shop: 'fas fa-shopping-bag',
-                    hotel: 'fas fa-bed',
-                    free: 'fas fa-walking',
-                    other: 'fas fa-star'
-                };
-                return map[type] || 'fas fa-circle';
+            return {
+                currentTab,
+                dateLabels,
+                schedule,
+                mustVisit,
+                checkList,
+                getTypeColor,
+                getIcon,
+                getTypeLabel
             };
-
-            return { currentTab, dateLabels, schedule, mustVisit, checkList, getTypeColor, getTypeLabel, getIcon };
         }
     }).mount('#app');
 </script>
