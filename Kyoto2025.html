@@ -305,17 +305,17 @@
             <div class="font-bold border-b text-gray-600">區段</div>
             <div class="font-bold border-b text-gray-600">路線</div>
             <div class="font-bold border-b text-gray-600">細節</div>
-            <div class="font-bold border-b text-gray-600">預估時間</div>
+            <div class="font-bold border-b text-gray-600">預估搭乘時間</div>
             
             <div class="text-gray-700">飯店 → JR 京都站</div>
             <div class="text-gray-700">公車</div>
             <div class="text-gray-700">4, 17, 205 號</div>
-            <div class="text-gray-700">約 15-25 分</div>
+            <div class="text-gray-700">約 15-25 分鐘</div>
 
             <div class="text-gray-700">JR 京都站 → JR 奈良站</div>
             <div class="text-gray-700">JR 奈良線</div>
             <div class="text-gray-700">快速列車</div>
-            <div class="text-gray-700">約 45-50 分</div>
+            <div class="text-gray-700">約 45-50 分鐘</div>
         </div>
     `;
 
@@ -324,47 +324,12 @@
             <div class="font-bold border-b text-gray-600">區段</div>
             <div class="font-bold border-b text-gray-600">路線</div>
             <div class="font-bold border-b text-gray-600">細節</div>
-            <div class="font-bold border-b text-gray-600">預估時間</div>
+            <div class="font-bold border-b text-gray-600">預估搭乘時間</div>
             
             <div class="text-gray-700">JR奈良站 → JR 京都站</div>
             <div class="text-gray-700">JR 奈良線</div>
             <div class="text-gray-700">快速列車</div>
-            <div class="text-gray-700">約 45-50 分</div>
-        </div>
-    `;
-
-    // 新增：嵐山回程表格 HTML (需求 1)
-    const ArashiyamaReturnHTML = `
-        <div class="grid grid-cols-4 gap-1 text-sm text-left">
-            <div class="font-bold border-b text-gray-600">區段</div>
-            <div class="font-bold border-b text-gray-600">路線</div>
-            <div class="font-bold border-b text-gray-600">細節</div>
-            <div class="font-bold border-b text-gray-600">預估時間</div>
-            
-            <div class="text-gray-700">Torokko嵐山站 → JR嵯峨嵐山站</div>
-            <div class="text-gray-700">步行</div>
-            <div class="text-gray-700">-</div>
-            <div class="text-gray-700">5-10 分鐘</div>
-
-            <div class="text-gray-700">JR嵯峨嵐山站 → JR京都站</div>
-            <div class="text-gray-700">JR山陰本線</div>
-            <div class="text-gray-700">嵯峨野線</div>
-            <div class="text-gray-700">約 17 分鐘</div>
-        </div>
-    `;
-
-    // 新增：伏見稻荷回程表格 HTML (需求 2)
-    const InariReturnHTML = `
-        <div class="grid grid-cols-4 gap-1 text-sm text-left">
-            <div class="font-bold border-b text-gray-600">區段</div>
-            <div class="font-bold border-b text-gray-600">路線</div>
-            <div class="font-bold border-b text-gray-600">細節</div>
-            <div class="font-bold border-b text-gray-600">時間</div>
-            
-            <div class="text-gray-700">伏見稻荷站 → 祇園四條站</div>
-            <div class="text-gray-700">京阪本線</div>
-            <div class="text-gray-700">特急/急行/準急</div>
-            <div class="text-gray-700">約 8-10分<br><span class="text-gray-400 text-[10px]">(總約15分)</span></div>
+            <div class="text-gray-700">約 45-50 分鐘</div>
         </div>
     `;
 
@@ -442,13 +407,8 @@
                         time: '17:00', 
                         title: '交通 電車',
                         type: 'transport', 
-                        transport: '京阪本線：伏見稻荷 → 祇園四条', 
-                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車',
-                        // 修改：Day 2 伏見稻荷回程改為表格 (需求 2)
-                        address_label: '電車搭乘資訊',
-                        address_icon: 'fa-subway',
-                        is_schedule: true,
-                        address_jp: InariReturnHTML
+                        transport: '京阪本線：伏見稻荷站 → 祇園四条站', 
+                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' 
                     },
                     { 
                         time: '17:30', 
@@ -474,8 +434,8 @@
                         type: 'sight', 
                         desc: '搭乘區間：龜岡 (起點) -> 嵐山', 
                         note: '發車時間：09:30 至 09:50',
-                        map_query: 'トロッコ亀岡駅', 
-                        link: 'https://nicklee.tw/447/arashiyama-torokko/', 
+                        map_query: 'トロッコ亀岡駅', // 需求 1: 新增龜岡站地圖
+                        link: 'https://nicklee.tw/447/arashiyama-torokko/', // 新增參考資訊
                         link_text: '購票/乘車資訊'
                     },
                     { 
@@ -496,12 +456,7 @@
                         title: '交通：返回京都車站',
                         type: 'transport',
                         desc: '從 Torokko 嵐山站出發',
-                        transport: '步行 + JR 山陰本線',
-                        // 修改：Day 3 嵐山回程改為表格 (需求 1)
-                        address_label: '回程詳細路線',
-                        address_icon: 'fa-shoe-prints',
-                        is_schedule: true,
-                        address_jp: ArashiyamaReturnHTML 
+                        transport: '步行(5-10分)至 JR 嵯峨嵐山站 → JR 山陰本線至 JR 京都站'
                     },
                     {
                         time: '16:30',
@@ -509,7 +464,7 @@
                         type: 'food',
                         desc: '京都車站逛街',
                         note: '京都駅ビル 10F',
-                        link: 'https://wow-japan.com/food-kyoto-station-ramen-koji/' 
+                        link: 'https://wow-japan.com/food-kyoto-station-ramen-koji/' // 新增參考資訊
                     },
                     {
                         time: '19:00',
@@ -517,10 +472,10 @@
                         type: 'transport',
                         desc: '京都站 → 四条河原町 (費用230日圓)',
                         transport: '公車 4、17、205 (甲或乙)',
-                        address_label: '公車搭乘資訊', 
-                        address_icon: 'fa-bus', 
-                        is_schedule: true, 
-                        address_jp: BusTableHTML 
+                        address_label: '公車搭乘資訊', // 自定義標籤
+                        address_icon: 'fa-bus', // 自定義圖示
+                        is_schedule: true, // 標記為表格內容，使用較小字體
+                        address_jp: BusTableHTML // 使用上方定義的 HTML
                     },
                     { 
                         time: '19:30', 
@@ -530,6 +485,7 @@
                     }
                 ],
                 day4: [
+                    // 需求 2: 12/27（六）新增交通
                     { 
                         time: '08:00', 
                         title: '交通：前往奈良', 
@@ -546,10 +502,11 @@
                         title: '奈良公園/東大寺', 
                         type: 'sight', 
                         desc: '與奈良鹿互動、世界最大木造建築', 
-                        map_query: 'JR奈良駅', 
+                        map_query: 'JR奈良駅', // 需求 2: 新增奈良站地圖導航
                         note: 'JR奈良站距奈良公園步行約 20 分鐘 (或搭公車)' 
                     },
                     { time: '12:00', title: '午餐', type: 'food', desc: '奈良周邊 (待定)', note: '午餐後準備回京都' },
+                    // 需求 3: 12/27（六）午餐後新增交通
                     { 
                         time: '14:00', 
                         title: '交通：返回京都', 
@@ -562,22 +519,22 @@
                         address_jp: NaraTrafficOutHTML 
                     },
                     { time: '15:30', title: '京都 teamLab', type: 'sight', desc: '沉浸式光影展', map_query: 'teamLab+Kyoto' },
+                    // 需求 4: 12/27（六）teamLab 後新增交通
                     {
                         time: '17:30',
                         title: '交通：返回市區',
                         type: 'transport',
                         desc: '京都站 → 四条河原町 (費用230日圓)',
                         transport: '公車 4、17、205 (甲或乙)',
-                        address_label: '公車搭乘資訊', 
-                        address_icon: 'fa-bus', 
-                        is_schedule: true, 
-                        address_jp: BusTableHTML 
+                        address_label: '公車搭乘資訊', // 自定義標籤
+                        address_icon: 'fa-bus', // 自定義圖示
+                        is_schedule: true, // 標記為表格內容，使用較小字體
+                        address_jp: BusTableHTML // 重複使用 Day3 的公車表格
                     },
                     { time: '20:00', title: '自由活動', type: 'other', desc: '最後採買機會' }
                 ],
                 day5: [
-                    // 修改：Day 5 錦市場新增連結 (需求 3)
-                    { time: '09:00', title: '錦市場', type: 'sight', desc: '京都的廚房，吃吃喝喝', map_query: 'Nishiki+Market', link: 'https://bobbyfun.tw/2024-01-09-2714/' },
+                    { time: '09:00', title: '錦市場', type: 'sight', desc: '京都的廚房，吃吃喝喝', map_query: 'Nishiki+Market' },
                     { time: '12:00', title: '前往關西機場', type: 'transport', transport: 'JR Haruka (約80分)', note: '記得提前買票/取票' },
                     { time: '16:15', title: '國泰 CX565 起飛', type: 'flight', desc: '18:30 抵達桃園機場' }
                 ]
@@ -647,104 +604,107 @@
                                 address: '産寧坂店',
                                 link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
                             },
+                            {
+                                name: '三年坂：阿古屋茶屋',
+                                desc: '茶泡飯吃到飽',
+                                note: '京都在地出名的野菜和漬物，適合想體驗傳統庶民料理的旅人',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+
                         ]
                     },
                     {
-                        area: '四条河原町/新京極',
+                        area: '四條通/購物',
                         items: [
-                            {
-                                name: 'Disney Store',
-                                hours: '10:00 - 20:00',
-                                address: '四条河原町店',
-                                desc: '位在四條河原町交叉口'
+                            { 
+                                name: 'SUGI藥局四条河原町店', 
+                                address: '京都府京都市中京区河原町通蛸薬師下る塩屋町343番地1',
+                                hours: '10:00〜隔日05:00',
+                                link: 'https://osaka.letsgojp.com/archives/727106/'
                             },
-                            {
-                                name: 'Can Do 100円店',
-                                hours: '10:00 - 21:00',
-                                desc: '位於新京極通',
-                                note: '生活雜貨、文具、零食'
+                            { 
+                                name: 'Onitsuka Tiger (京都店)', 
+                                address: '385, Komeyacho, Shijo-agaru, Kawaramachi-Dori',
+                                hours: '11:00〜21:00'
                             },
-                            {
-                                name: '大國藥妝',
-                                hours: '10:00 - 22:50',
-                                address: '新京極店',
-                                note: '就在 Super Hotel 附近，價格通常較優惠'
-                            },
-                            {
-                                name: 'Standard Products',
-                                desc: 'Daiso 旗下質感品牌',
-                                address: '京都四条通店',
-                                note: '類似無印良品風格的平價雜貨'
+                            { 
+                                name: 'Montbell (京都店)', 
+                                address: '京都市中京区新京極通蛸薬師下ル東側町530-1',
+                                hours: '11:00〜21:00'
                             }
                         ]
                     }
                 ],
                 food: [
-                    {
-                        name: 'ひさご (葫蘆親子丼)',
-                        desc: '京都老字號親子丼，雞肉鮮嫩，蛋液滑順',
-                        note: '建議開店前就去排隊'
-                    },
-                    {
-                        name: '京の焼肉処 弘',
-                        desc: '高CP值和牛燒肉，肉質優良',
-                        note: '已預約 12/25 晚間'
-                    },
-                    {
-                        name: '嵐山よしむら',
-                        desc: '坐擁渡月橋美景的蕎麥麵名店',
-                        note: '麵條有嚼勁，天婦羅也很好吃'
-                    },
-                    {
-                        name: '名代豬排 (Katsukura)',
-                        desc: '就在京都車站樓上，炸豬排酥脆',
-                        note: '高麗菜絲、味噌湯可續加'
-                    }
+                    { name: '錦市場', desc: '各種京都小吃、漬物、玉子燒' }
                 ]
             };
 
-            const checkList = {
-                '證件/錢包': ['護照 (有效期限6個月以上)', '日幣現金 (約 5-8萬)', '信用卡 (JCB/Visa)', 'Visit Japan Web QR Code (截圖)', '網卡/漫遊開通'],
-                '衣物 (冬)': ['發熱衣 x 3-4', '毛衣/帽T', '長褲/裙子', '厚外套/羽絨衣', '圍巾/手套/毛帽', '好走的鞋子 (日行萬步)', '睡衣 (飯店有提供浴衣)'],
-                '3C/電器': ['手機 + 充電線', '行動電源 (必要!)', '轉接頭 (日本兩孔扁插)', 'Wifi機/Sim卡針'],
-                '盥洗/藥妝': ['牙刷牙膏 (飯店有但自備環保)', '保養品 (日本很乾)', '護唇膏/護手霜', '個人常備藥 (感冒/止痛/胃藥)', '口罩'],
-                '其他': ['雨傘/折疊傘 (天氣多變)', '購物袋/環保袋', '筆 (填入境卡用)', '衛生紙/濕紙巾']
-            };
+            const checkList = ref({
+                '🎒 上飛機隨身包 (隨身攜帶)': [
+                    '手機', 'SIM卡 (網路)', '錢包 (外幣、些許台幣)', '魔卡/小卡 (交通卡)', 
+                    '護照 (正本)', '簽證', '電子機票 (存手機, 無網可用)', '訂房資料 (存手機, 無網可用)', '旅遊票券',
+                    '衛生紙/濕紙巾', '摺疊雨傘', '水/水瓶 (過安檢前喝完)', '護手霜/護唇膏', '筆',
+                    '夾鏈袋裝液體瓶罐 (100ml內)', '眼鏡盒/眼鏡/隱眼', '耳塞 (超級必要)', '口罩一個',
+                    '行動電源 (不可托運！)', '充電線', '耳機', '平板/電子書閱讀器 (不可托運！)', '筆記型電腦 (不可托運！)',
+                    '頸枕', '保暖外套', '個人藥品 (平日在吃的, 避免托運沒跟上)'
+                ],
+                '📄 托運 - 文件類': [
+                    '身分證影本', '護照影本', '保險文件', '信用卡緊急聯絡資訊', '緊急聯絡人資訊'
+                ],
+                '👕 托運 - 衣物類': [
+                    '衣物壓縮袋', '足夠衣物', '睡衣', '內衣褲', '襪子', '禦寒外套', '防曬帽/毛帽'
+                ],
+                '🧴 托運 - 雜物/藥品': [
+                    '衛生紙/濕紙巾', '衛生棉...等女性用品', '口罩 (備用)', '隱形眼鏡/藥水', 
+                    '髮圈', '太陽眼鏡', '環保餐具', '購物袋 (多個)', '夾鏈袋 (多個)', 
+                    '行李秤', '折疊衣架', '家裡鑰匙 (務必記得放在哪裡！)', '個人藥品'
+                ],
+                '🔌 托運 - 3C 電器': [
+                    '延長線', '相機', '相機充電器', '手機充電頭 (usb-a、usb-c)', '手機充電線', '麥克風', '記憶卡'
+                ]
+            });
 
             const getTypeColor = (type) => {
                 const map = {
-                    transport: 'bg-blue-500',
-                    sight: 'bg-pink-500',
-                    food: 'bg-orange-500',
-                    hotel: 'bg-indigo-500',
                     flight: 'bg-sky-500',
-                    other: 'bg-gray-400'
+                    transport: 'bg-blue-600', // 交通改深一點
+                    food: 'bg-orange-500',
+                    sight: 'bg-green-600',
+                    shop: 'bg-pink-500',
+                    hotel: 'bg-indigo-500',
+                    free: 'bg-purple-500',
+                    other: 'bg-gray-500' 
                 };
-                return map[type] || 'bg-gray-400';
+                return map[type] || 'bg-gray-500';
             };
 
             const getIcon = (type) => {
                 const map = {
-                    transport: 'fa-bus',
-                    sight: 'fa-camera',
-                    food: 'fa-utensils',
-                    hotel: 'fa-bed',
-                    flight: 'fa-plane',
-                    other: 'fa-star'
+                    flight: 'fas fa-plane',
+                    transport: 'fas fa-train',
+                    food: 'fas fa-utensils',
+                    sight: 'fas fa-mountain',
+                    shop: 'fas fa-shopping-bag',
+                    hotel: 'fas fa-bed',
+                    free: 'fas fa-leaf',
+                    other: 'fas fa-ellipsis-h' 
                 };
-                return map[type] || 'fa-circle';
+                return map[type] || 'fas fa-question';
             };
 
             const getTypeLabel = (type) => {
                 const map = {
-                    transport: '交通',
-                    sight: '景點',
-                    food: '美食',
-                    hotel: '住宿',
                     flight: '航班',
+                    transport: '交通',
+                    food: '餐飲',
+                    sight: '景點',
+                    shop: '購物',
+                    hotel: '住宿',
+                    free: '自由活動',
                     other: '其他'
                 };
-                return map[type] || '其他';
+                return map[type] || '未知';
             };
 
             return {
