@@ -24,6 +24,8 @@
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 增加給司機看的文字大小 */
+        .driver-text { font-size: 1.25rem; }
     </style>
 </head>
 <body>
@@ -95,7 +97,9 @@
 
                             <div v-if="item.address_jp" class="mt-2 bg-slate-100 p-2 rounded border border-slate-200">
                                 <p class="text-[10px] text-gray-500 mb-0.5"><i class="fas fa-taxi"></i> 導航（可給司機看）：</p>
-                                <p class="text-base font-bold text-slate-800 jp-text select-all leading-snug">{{ item.address_jp }}</p>
+                                <p class="driver-text font-black text-slate-800 jp-text select-all leading-snug">
+                                    <span v-html="item.address_jp"></span>
+                                </p>
                             </div>
 
                             <div v-if="item.link || item.map_query" class="flex gap-2 mt-2 pt-1">
@@ -168,7 +172,7 @@
                     <div v-for="(food, idx) in mustVisit.food" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                         <h4 class="font-bold text-lg text-orange-600">{{ food.name }}</h4>
                         <p class="text-sm text-gray-600 mt-1">{{ food.desc }}</p>
-                        <a href="https://www.google.com/maps/search/?api=1&query=京都錦市場" target="_blank" class="block mt-2 text-center bg-gray-100 py-2 rounded text-sm font-bold text-gray-600">
+                        <a :href="'https://www.google.com/maps/search/?api=1&query=' + food.name" target="_blank" class="block mt-2 text-center bg-gray-100 py-2 rounded text-sm font-bold text-gray-600">
                             查看位置
                         </a>
                     </div>
@@ -182,7 +186,7 @@
                 <p class="text-xl font-bold text-indigo-700">Super Hotel 京都・四条河原町店</p>
                 <div class="my-4 bg-gray-50 p-3 rounded border border-gray-200">
                     <p class="text-xs text-gray-500 font-bold mb-1"><i class="fas fa-taxi"></i> 導航（可給司機看）：</p>
-                    <p class="text-lg font-bold text-gray-900 mt-1 jp-text leading-relaxed">〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1</p>
+                    <p class="text-lg font-bold text-gray-900 mt-1 jp-text leading-relaxed select-all">〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1</p>
                 </div>
                 <div class="flex gap-2">
                     <a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Kyoto+Shijokawaramachi" target="_blank" class="flex-1 bg-indigo-600 text-white text-center py-3 rounded-lg font-bold shadow hover:bg-indigo-700">
@@ -286,16 +290,18 @@
                         link_text: '查看購票/取票教學'
                     },
                     { time: '17:00', title: '移動：前往飯店', type: 'transport', transport: 'Uber (BLACK VAN)', note: '車程約 15 分鐘' },
-                    { time: '18:00', title: '飯店 Check-in', type: 'hotel', desc: 'Super Hotel 四条河原町', address_jp: '京都府京都市中京区新京極通り四条上る中之町538-1', map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' },
+                    { time: '18:00', title: '飯店 Check-in', type: 'hotel', desc: 'Super Hotel 四条河原町', address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1', map_query: 'Super+Hotel+Kyoto+Shijokawaramachi' },
                     { time: '18:30', title: '晚餐：(待定)', type: 'food', desc: '可能在京都車站或四條通', note: '視情況調整' },
                     { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day2: [
+                    // 1. 修改計程車目的地為清水道頂端，並新增給司機看的日文和地址
                     { 
                         time: '08:00', 
                         title: '交通 Taxi', 
                         type: 'transport', 
-                        note: '計程車至「五条坂」或「清水道」頂端' 
+                        note: '計程車至「清水道頂端」，盡可能靠近清水寺門口',
+                        address_jp: '<strong>清水寺（きよみずでら）</strong><br>目的地：<strong>清水道（きよみずみち）頂上</strong><br>〒605-0862 京都府京都市東山区清水一丁目'
                     },
                     { 
                         time: '08:20', 
@@ -303,10 +309,45 @@
                         type: 'sight', 
                         desc: '清水舞台、二年坂', 
                         map_query: 'Kiyomizu-dera',
-                        link: 'https://bugi.tw/2016/01/6.html'
+                        link: 'https://www.bugi.tw/2016/01/6.html'
                     },
                     { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', desc: 'ひさご 親子丼 (11:30-16:00)', address_jp: '京都市東山区下河原町484', map_query: 'Hisago+Kyoto', link: 'https://bobbyfun.tw/2023-05-04-2359/' },
-                    { time: '14:00', title: '伏見稻荷大社', type: 'sight', desc: '本殿 -> 千本鳥居 -> 奧社折返', note: '不用爬整座山！', transport: '搭乘 BUS 前往', map_query: 'Fushimi+Inari+Taisha' },
+                    // 2. 新增午餐與伏見稻荷大社間的 TAXI 交通方式
+                    { 
+                        time: '13:30', 
+                        title: '交通 Taxi', 
+                        type: 'transport', 
+                        transport: 'TAXI (約15-20分鐘)', 
+                        note: '從葫蘆親子丼前往伏見稻荷大社',
+                        address_jp: '<strong>伏見稲荷大社（ふしみいなりたいしゃ）</strong><br>〒612-0882 京都府京都市伏見区深草藪之内町６８'
+                    },
+                    // 1. 伏見稻荷大社更新連結
+                    { 
+                        time: '14:00', 
+                        title: '伏見稻荷大社', 
+                        type: 'sight', 
+                        desc: '本殿 -> 千本鳥居 -> 奧社折返', 
+                        note: '不用爬整座山！', 
+                        map_query: 'Fushimi+Inari+Taisha',
+                        link: 'https://osaka.letsgojp.com/archives/72741/' // 參考資訊更新
+                    },
+                    // 2. 伏見稻荷大社下方新增住宿
+                    { 
+                        time: '17:00', 
+                        title: 'Super Hotel 京都・四条河原町店', 
+                        type: 'hotel', 
+                        desc: '入住與休息', 
+                        transport: '電車 (京阪本線：伏見稻荷站 → 祇園四条站)',
+                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車' 
+                    },
+                    // 2. 飯店與晚餐間新增電車交通
+                    { 
+                        time: '18:00', 
+                        title: '交通 電車', 
+                        type: 'transport', 
+                        transport: '步行 (約10分鐘) 或計程車至晚餐地點', 
+                        note: '飯店位於祇園四條站附近，晚餐地點亦在附近，可步行'
+                    },
                     { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店 (訂位代號 #104024)', address_jp: '京都市中京区紙屋町674-2', map_query: 'Kyoto+Yakiniku+Hiro+Shijo+Kiyamachi', link: 'https://yakiniku-hiro.com/' },
                     { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
@@ -342,13 +383,13 @@
                                 address: '日本〒605-0826 Kyoto, Higashiyama Ward, Masuyacho, 349',
                                 link: 'https://angelala.tw/starbucks-kyoto/'
                             },
-							{
+                            {
                                 name: '二年坂：石畳',
                                 desc: '霜淇淋推薦',
                                 link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
                             },
-							
-							
+                            
+                            
                             {
                                 name: '清水坂：八ツ橋しゅ泡芙',
                                 address: '京都清水坂',
@@ -373,6 +414,7 @@
                                 note: '「親子丼」超強大，炸蝦親子丼的麵衣酥脆美味，鮮蝦彈牙可口；蛋花軟嫩滑口，搭配美味的日本米飯',
                                 link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
                             },
+                            
                             
                             {
                                 name: '三年坂：藤菜美 (抹茶/糰子)',
