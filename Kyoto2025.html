@@ -96,10 +96,13 @@
                             </p>
 
                             <div v-if="item.address_jp" class="mt-2 bg-slate-100 p-2 rounded border border-slate-200">
-                                <p class="text-[10px] text-gray-500 mb-0.5"><i class="fas fa-taxi"></i> 導航（可給司機看）：</p>
-                                <p class="driver-text font-black text-slate-800 jp-text select-all leading-snug">
-                                    <span v-html="item.address_jp"></span>
+                                <p class="text-[10px] text-gray-500 mb-0.5">
+                                    <i class="fas" :class="item.address_icon || 'fa-taxi'"></i> 
+                                    {{ item.address_label || '導航（可給司機看）：' }}
                                 </p>
+                                <div :class="{'driver-text font-black': !item.is_schedule, 'text-sm': item.is_schedule}" class="text-slate-800 jp-text select-all leading-snug">
+                                    <span v-html="item.address_jp"></span>
+                                </div>
                             </div>
 
                             <div v-if="item.link || item.map_query" class="flex gap-2 mt-2 pt-1">
@@ -276,7 +279,6 @@
     createApp({
         setup() {
             const currentTab = ref('day1');
-            // 新增日期標籤陣列
             const dateLabels = ['12/24 (三)', '12/25 (四)', '12/26 (五)', '12/27 (六)', '12/28 (日)'];
 
             const schedule = {
@@ -360,7 +362,6 @@
                     { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day3: [
-                    // Day 3 行程依需求修正
                     { 
                         time: '08:00', 
                         title: '交通：前往嵐山', 
@@ -374,7 +375,8 @@
                         title: '嵐山小火車', 
                         type: 'sight', 
                         desc: '龜岡 -> 嵐山', 
-                        note: '09:30 至 09:50' 
+                        note: '09:30 至 09:50',
+                        link: 'https://nicklee.tw/447/arashiyama-torokko/' // 新增參考資訊
                     },
                     { 
                         time: '11:30', 
@@ -389,7 +391,6 @@
                         type: 'sight', 
                         desc: '渡月橋、竹林之道' 
                     },
-                    // 新增交通：回程
                     {
                         time: '15:30',
                         title: '交通：返回京都車站',
@@ -397,24 +398,47 @@
                         desc: '從 Torokko 嵐山站出發',
                         transport: '步行(5-10分)至 JR 嵯峨嵐山站 → JR 山陰本線至 JR 京都站'
                     },
-                    // 新增餐飲：拉麵小路
                     {
                         time: '16:30',
                         title: '餐飲：京都車站（拉麵小路）',
                         type: 'food',
                         desc: '京都車站逛街',
-                        note: '京都駅ビル 10F'
+                        note: '京都駅ビル 10F',
+                        link: 'https://wow-japan.com/food-kyoto-station-ramen-koji/' // 新增參考資訊
                     },
-                    // 新增交通：公車
                     {
                         time: '19:00',
                         title: '交通：返回市區',
                         type: 'transport',
-                        desc: '京都站 → 四条河原町',
+                        desc: '京都站 → 四条河原町 (費用230日圓)',
                         transport: '公車 4、17、205 (甲或乙)',
-                        note: '從 A2 乘場上車，費用230日圓。皆可到達，飯店就在下車點步行1-2分鐘處。'
+                        address_label: '公車搭乘資訊', // 自定義標籤
+                        address_icon: 'fa-bus', // 自定義圖示
+                        is_schedule: true, // 標記為表格內容，使用較小字體
+                        address_jp: `
+                            <div class="grid grid-cols-4 gap-1 text-sm text-left">
+                                <div class="font-bold border-b text-gray-600">路線</div>
+                                <div class="font-bold border-b text-gray-600">乘場</div>
+                                <div class="font-bold border-b text-gray-600">時間</div>
+                                <div class="font-bold border-b text-gray-600">頻率</div>
+                                
+                                <div class="font-bold text-blue-600">4號</div>
+                                <div>A2</div>
+                                <div>12-14分</div>
+                                <div>10-15分</div>
+
+                                <div class="font-bold text-blue-600">17號</div>
+                                <div>A2/D2</div>
+                                <div>10-15分</div>
+                                <div>10分</div>
+
+                                <div class="font-bold text-blue-600">205</div>
+                                <div>A2</div>
+                                <div>12-14分</div>
+                                <div>10分</div>
+                            </div>
+                        `
                     },
-                    // 新增飯店
                     { 
                         time: '19:30', 
                         title: 'Super Hotel 京都・四条河原町店', 
