@@ -387,10 +387,17 @@
             const currentTab = ref('day1');
             const dateLabels = ['12/24 (三)', '12/25 (四)', '12/26 (五)', '12/27 (六)', '12/28 (日)'];
 
-            // 新增一個手動重載頁面的方法
+            // **** 關鍵修改：使用 Cache-Buster 確保強制更新 ****
             const refreshApp = () => {
-                location.reload();
+                // 創建 URL 物件
+                const url = new URL(window.location.href);
+                // 新增或更新一個名為 'v' 的參數，其值為當前時間戳 (毫秒)
+                // 這樣瀏覽器會將此視為一個新網址，從而強制重新下載頁面內容
+                url.searchParams.set('v', Date.now());
+                // 導航到新的 URL
+                window.location.href = url.toString();
             };
+            // **********************************************
 
 
             const schedule = {
