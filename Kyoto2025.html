@@ -27,9 +27,14 @@
         /* 增加給司機看的文字大小 */
         .driver-text { font-size: 1.25rem; }
         
+        /* RWD 調整：行程卡片在平板/桌機上圖示區塊更寬 */
         @media (min-width: 640px) {
-            .card .icon-col { width: 100px; }
-            .card .content-col { padding: 1.5rem; }
+            .card .icon-col {
+                width: 100px; 
+            }
+            .card .content-col {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -89,14 +94,14 @@
                         <span class="text-xs font-bold break-words w-full">{{ getTypeLabel(item.type) }}</span>
                     </div>
 
-                    <div :class="['content-col flex-1 p-3 sm:p-4 flex flex-col justify-center', item.type === 'food' ? 'bg-orange-50' : '']">
+                    <div class="content-col flex-1 p-3 sm:p-4 flex flex-col justify-center">
                         <div class="flex justify-between items-start mb-1">
                             <span class="text-sm font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{{ item.time }}</span>
                         </div>
                         <h3 class="text-lg font-bold text-gray-800 leading-tight mb-2 sm:text-xl">{{ item.title }}</h3>
                         
                         <div class="text-sm text-gray-600 space-y-2">
-                            <div v-if="item.desc" class="text-gray-700" v-html="item.desc"></div>
+                            <p v-if="item.desc" class="text-gray-700">{{ item.desc }}</p>
                             
                             <p v-if="item.transport" class="text-blue-700 bg-blue-50 px-2 py-1 rounded text-xs inline-block font-medium">
                                 <i class="fas fa-arrow-right mr-1"></i> {{ item.transport }}
@@ -117,7 +122,7 @@
                             </div>
 
                             <div v-if="item.link || item.map_query" class="flex gap-2 mt-2 pt-1">
-                                <a v-if="item.map_query" :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(item.map_query)" target="_blank" class="flex-1 bg-green-100 text-green-700 text-center py-1.5 rounded text-xs font-bold hover:bg-green-200">
+                                <a v-if="item.map_query" :href="'https://www.google.com/maps/search/?api=1&query=' + item.map_query" target="_blank" class="flex-1 bg-green-100 text-green-700 text-center py-1.5 rounded text-xs font-bold hover:bg-green-200">
                                     <i class="fas fa-map-marker-alt"></i> 地圖
                                 </a>
                                 <a v-if="item.link" :href="item.link" target="_blank" class="flex-1 bg-gray-100 text-gray-700 text-center py-1.5 rounded text-xs font-bold hover:bg-gray-200">
@@ -137,18 +142,41 @@
         <div v-if="currentTab === 'must'" class="space-y-6">
             
             <div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-purple-500">線香購買參考資訊</h3>
-                <div class="space-y-4">
-                    <div v-for="(category, cIdx) in incenseData" :key="cIdx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                        <h4 class="font-bold text-lg text-purple-700 mb-2 border-b pb-1">{{ category.brand }}</h4>
-                        <div class="space-y-4 mt-3">
-                            <div v-for="(shop, sIdx) in category.items" :key="sIdx" class="bg-purple-50/50 p-3 rounded-lg border border-purple-100">
-                                <div class="font-bold text-gray-800">{{ shop.name }}</div>
-                                <div v-if="shop.hours" class="text-xs text-orange-600 mt-1 font-bold"><i class="far fa-clock mr-1"></i>{{ shop.hours }}</div>
-                                <div class="text-xs text-gray-600 mt-1 jp-text">{{ shop.address }}</div>
-                                <div class="mt-2">
-                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(shop.address)" target="_blank" class="inline-block bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-bold">
-                                        <i class="fas fa-location-arrow mr-1"></i> 開啟導航
+                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-pink-500">逛街景點/商店</h3>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div v-for="(area, areaIdx) in mustVisit.shops" :key="areaIdx" class="sm:col-span-2">
+                        <h4 class="font-bold text-lg text-gray-700 mb-3 mt-4 pl-1 flex items-center border-b border-gray-200 pb-1">
+                            <i class="fas fa-map-pin text-pink-500 mr-2"></i> {{ area.area }}
+                        </h4>
+                        
+                        <div class="grid md:grid-cols-3 sm:grid-cols-2 gap-3">
+                            <div v-for="(shop, idx) in area.items" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-bold text-lg text-pink-600">{{ shop.name }}</h4>
+                                </div>
+                                
+                                <p v-if="shop.desc" class="text-sm text-gray-800 font-bold mt-1">
+                                    {{ shop.desc }}
+                                </p>
+
+                                <p v-if="shop.hours" class="text-xs text-orange-600 font-bold mt-1">
+                                    <i class="far fa-clock"></i> {{ shop.hours }}
+                                </p>
+                                
+                                <p v-if="shop.note" class="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded leading-relaxed border border-gray-100">
+                                    <i class="fas fa-comment-dots text-pink-300 mr-1"></i> {{ shop.note }}
+                                </p>
+
+                                <p v-if="shop.address" class="text-sm text-gray-400 mt-2 jp-text text-xs">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>{{ shop.address }}
+                                </p>
+
+                                <div class="mt-3 flex gap-2">
+                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + shop.name + (shop.address ? ' ' + shop.address : ' Kyoto')" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow-sm">
+                                        <i class="fas fa-map-marker-alt"></i> 導航
+                                    </a>
+                                    <a v-if="shop.link" :href="shop.link" target="_blank" class="flex-1 bg-gray-100 text-gray-700 text-center py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-200">
+                                        <i class="fas fa-info-circle"></i> 參考資訊
                                     </a>
                                 </div>
                             </div>
@@ -158,24 +186,14 @@
             </div>
 
             <div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-pink-500">逛街景點/商店</h3>
-                <div class="grid sm:grid-cols-2 gap-4">
-                    <div v-for="(area, areaIdx) in mustVisit.shops" :key="areaIdx" class="sm:col-span-2">
-                        <h4 class="font-bold text-lg text-gray-700 mb-3 mt-4 pl-1 flex items-center border-b border-gray-200 pb-1">
-                            <i class="fas fa-map-pin text-pink-500 mr-2"></i> {{ area.area }}
-                        </h4>
-                        <div class="grid md:grid-cols-3 sm:grid-cols-2 gap-3">
-                            <div v-for="(shop, idx) in area.items" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                                <h4 class="font-bold text-lg text-pink-600">{{ shop.name }}</h4>
-                                <p v-if="shop.desc" class="text-sm text-gray-800 font-bold mt-1">{{ shop.desc }}</p>
-                                <p v-if="shop.hours" class="text-xs text-orange-600 font-bold mt-1"><i class="far fa-clock"></i> {{ shop.hours }}</p>
-                                <div class="mt-3 flex gap-2">
-                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(shop.name + (shop.address ? ' ' + shop.address : ''))" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow-sm">
-                                        <i class="fas fa-map-marker-alt"></i> 導航
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-orange-500">推薦餐廳</h3>
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div v-for="(food, idx) in mustVisit.food" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="font-bold text-lg text-orange-600">{{ food.name }}</h4>
+                        <p class="text-sm text-gray-600 mt-1">{{ food.desc }}</p>
+                        <a :href="'https://www.google.com/maps/search/?api=1&query=' + food.name" target="_blank" class="block mt-2 text-center bg-gray-100 py-2 rounded text-sm font-bold text-gray-600 hover:bg-gray-200">
+                            查看位置
+                        </a>
                     </div>
                 </div>
             </div>
@@ -186,14 +204,84 @@
                 <h3 class="text-lg font-bold text-gray-500 mb-1">住宿飯店</h3>
                 <p class="text-xl font-bold text-indigo-700">Super Hotel 京都・四条河原町店</p>
                 <div class="my-4 bg-gray-50 p-3 rounded border border-gray-200">
-                    <p class="text-xs text-gray-500 font-bold mb-1"><i class="fas fa-taxi"></i> 導航：</p>
-                    <p class="text-lg font-bold text-gray-900 mt-1 jp-text leading-relaxed select-all">〒604-8042 京都府京都市中京区新京極通り四条上る中之町538-1</p>
+                    <p class="text-xs text-gray-500 font-bold mb-1"><i class="fas fa-taxi"></i> 導航（可給司機看）：</p>
+                    <p class="text-lg font-bold text-gray-900 mt-1 jp-text leading-relaxed select-all">〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1</p>
                 </div>
-            </div>
+                <div class="flex gap-2">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Super+Hotel+Kyoto+Shijokawaramachi" target="_blank" class="flex-1 bg-indigo-600 text-white text-center py-3 rounded-lg font-bold shadow hover:bg-indigo-700">
+                        <i class="fas fa-location-arrow mr-1"></i> 導航
+                    </a>
+                    </div>
             </div>
 
-        <div v-if="currentTab === 'checklist'" class="space-y-4">
+            <div class="bg-white p-5 rounded-xl shadow border-l-8 border-sky-500">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-bold text-gray-500">去程航班 (12/24)</h3>
+                    <span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs font-bold">國泰 CX564</span>
+                </div>
+                <div class="flex justify-between items-center text-center mt-3">
+                    <div>
+                        <p class="text-3xl font-black text-gray-800">TPE</p>
+                        <p class="text-xs text-gray-500">桃園機場</p>
+                        <p class="text-lg font-bold text-sky-600 mt-1">11:15</p>
+                    </div>
+                    <div class="text-gray-300 px-2">
+                        <i class="fas fa-plane text-2xl"></i>
+                        <div class="h-[2px] w-12 bg-gray-200 my-1"></div>
+                        <p class="text-xs">2h 40m</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-black text-gray-800">KIX</p>
+                        <p class="text-xs text-gray-500">關西機場</p>
+                        <p class="text-lg font-bold text-sky-600 mt-1">14:55</p>
+                    </div>
+                </div>
             </div>
+
+            <div class="bg-white p-5 rounded-xl shadow border-l-8 border-sky-500">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-bold text-gray-500">回程航班 (12/28)</h3>
+                    <span class="bg-sky-100 text-sky-700 px-2 py-1 rounded text-xs font-bold">國泰 CX565</span>
+                </div>
+                <div class="flex justify-between items-center text-center mt-3">
+                    <div>
+                        <p class="text-3xl font-black text-gray-800">KIX</p>
+                        <p class="text-xs text-gray-500">關西機場</p>
+                        <p class="text-lg font-bold text-sky-600 mt-1">16:15</p>
+                    </div>
+                    <div class="text-gray-300 px-2">
+                        <i class="fas fa-plane fa-flip-horizontal text-2xl"></i>
+                        <div class="h-[2px] w-12 bg-gray-200 my-1"></div>
+                        <p class="text-xs">3h 15m</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-black text-gray-800">TPE</p>
+                        <p class="text-xs text-gray-500">桃園機場</p>
+                        <p class="text-lg font-bold text-sky-600 mt-1">18:30</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="currentTab === 'checklist'" class="space-y-4">
+            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 min-h-[50vh]">
+                <h3 class="text-xl font-bold text-emerald-800 mb-4 flex items-center">
+                    <i class="fas fa-suitcase mr-2"></i> 行李檢查清單
+                </h3>
+                
+                <div v-for="(items, category) in checkList" :key="category" class="mb-6">
+                    <h4 class="font-bold text-emerald-700 mb-2 border-b border-emerald-200 pb-1">{{ category }}</h4>
+                    <div class="space-y-2">
+                        <label v-for="(item, i) in items" :key="i" class="flex items-start space-x-3 bg-white p-3 rounded-lg shadow-sm border border-emerald-100 active:bg-emerald-50 transition-colors">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 mt-0.5 text-emerald-600 rounded focus:ring-emerald-500 flex-shrink-0">
+                            <span class="text-gray-700 text-sm font-medium leading-tight">{{ item }}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <p class="text-center text-emerald-600/50 text-xs mt-6">祝您旅途愉快！</p>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -201,33 +289,135 @@
 <script>
     const { createApp, ref } = Vue;
 
+    const BusTableHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">乘場</div>
+            <div class="font-bold border-b text-gray-600">預估搭乘</div>
+            <div class="font-bold border-b text-gray-600">總時間</div>
+            
+            <div class="font-bold text-blue-600">4號</div>
+            <div>A2</div>
+            <div>約 12-14分</div>
+            <div>約 25分</div>
+
+            <div class="font-bold text-blue-600">17號</div>
+            <div>A2/D2</div>
+            <div>約 10-15分</div>
+            <div>約 20分</div>
+
+            <div class="font-bold text-blue-600">205</div>
+            <div>A2</div>
+            <div>約 12-14分</div>
+            <div>約 25分</div>
+        </div>
+    `;
+
+    const NaraTrafficInHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">區段</div>
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">細節</div>
+            <div class="font-bold border-b text-gray-600">時間</div>
+            
+            <div class="text-gray-700">市區 → JR 京都站</div>
+            <div class="text-gray-700">公車/地鐵</div>
+            <div class="text-gray-700">4, 17, 205 號</div>
+            <div class="text-gray-700">約 20分</div>
+
+            <div class="text-gray-700">JR 京都 → JR 奈良</div>
+            <div class="text-gray-700">JR 奈良線</div>
+            <div class="text-gray-700">快速列車</div>
+            <div class="text-gray-700">約 50分</div>
+
+            <div class="text-blue-700 font-bold col-span-4 mt-2 border-t pt-1">🚌 轉乘巴士 (前往公園)：</div>
+            <div class="text-blue-700 font-bold">JR 奈良站 → 公園</div>
+            <div class="text-blue-700 font-bold">奈良交通巴士</div>
+            <div class="text-blue-700 font-bold text-xs leading-tight">
+                <strong>乘場：</strong>東口2號站牌<br>
+                <strong>路線：</strong>市內循環 (外回/順時針)<br>
+                <strong>下車：</strong>縣廳前
+            </div>
+            <div class="text-blue-700 font-bold">約 10分</div>
+        </div>
+    `;
+
+    const NaraTrafficOutHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">區段</div>
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">細節</div>
+            <div class="font-bold border-b text-gray-600">時間</div>
+            
+            <div class="text-blue-700 font-bold">奈良公園 → JR 奈良</div>
+            <div class="text-blue-700 font-bold">奈良交通巴士</div>
+            <div class="text-blue-700 font-bold text-xs">
+                搭乘「市內循環 (內回)」<br>
+                1號巴士 (對面站牌)<br>
+                至 JR奈良站
+            </div>
+            <div class="text-blue-700 font-bold">約 10分</div>
+
+            <div class="text-gray-700">JR 奈良 → JR 京都</div>
+            <div class="text-gray-700">JR 奈良線</div>
+            <div class="text-gray-700">快速列車</div>
+            <div class="text-gray-700">約 50分</div>
+        </div>
+    `;
+
+    // 1.12/26 嵐山返回京都車站的交通資訊
+    const ArashiyamaOutHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">區段</div>
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">細節</div>
+            <div class="font-bold border-b text-gray-600">預估時間</div>
+            
+            <div class="text-gray-700">Torokko 嵐山站 → JR 嵯峨嵐山站</div>
+            <div class="text-gray-700">步行</div>
+            <div class="text-gray-700">-</div>
+            <div class="text-gray-700">5-10 分鐘</div>
+
+            <div class="text-gray-700">JR 嵯峨嵐山站 → JR 京都站</div>
+            <div class="text-gray-700">JR 山陰本線 (嵯峨野線)</div>
+            <div class="text-gray-700">-</div>
+            <div class="text-gray-700">約 17 分鐘</div>
+        </div>
+    `;
+
+    // 2. 12/25 伏見稻荷返回祇園四條的交通資訊
+    const FushimiInariOutHTML = `
+        <div class="grid grid-cols-4 gap-1 text-sm text-left">
+            <div class="font-bold border-b text-gray-600">區段</div>
+            <div class="font-bold border-b text-gray-600">路線</div>
+            <div class="font-bold border-b text-gray-600">細節</div>
+            <div class="font-bold border-b text-gray-600">預估時間</div>
+            
+            <div class="text-gray-700">伏見稻荷站 → 祇園四條站</div>
+            <div class="text-gray-700">京阪本線</div>
+            <div class="text-gray-700">特急/急行/準急皆可</div>
+            <div class="text-gray-700">約 10 - 15 分鐘</div>
+        </div>
+    `;
+
+
     createApp({
         setup() {
             const currentTab = ref('day1');
             const dateLabels = ['12/24 (三)', '12/25 (四)', '12/26 (五)', '12/27 (六)', '12/28 (日)'];
 
+            // **** 關鍵修改：使用 Cache-Buster 確保強制更新 ****
             const refreshApp = () => {
+                // 創建 URL 物件
                 const url = new URL(window.location.href);
+                // 新增或更新一個名為 'v' 的參數，其值為當前時間戳 (毫秒)
+                // 這樣瀏覽器會將此視為一個新網址，從而強制重新下載頁面內容
                 url.searchParams.set('v', Date.now());
+                // 導航到新的 URL
                 window.location.href = url.toString();
             };
+            // **********************************************
 
-            const incenseData = [
-                {
-                    brand: '一. 松榮堂',
-                    items: [
-                        { name: '1. 香老舖 松榮堂 產寧坂店', hours: '10:00–18:00', address: '334 Kiyomizu, Higashiyama Ward, Kyoto, 605-0862日本' },
-                        { name: '2. 松榮堂 香音 (JR京都伊勢丹)', hours: '10:00–20:00', address: '日本〒600-8216 Kyoto, Shimogyo Ward, Higashishiokojicho, ジェイアール京都伊勢丹 10F' },
-                        { name: '3. 松榮堂 四條店', hours: '10:00–19:00', address: 'Japanese Stationery / Japanese Goods, 79番地 Tachiuri Nishimachi, Shimogyo Ward, Kyoto, 600-8007日本' }
-                    ]
-                },
-                {
-                    brand: '二. 三十三間堂',
-                    items: [
-                        { name: '三十三間堂 限定「名香」', hours: '08:30–17:00', address: '657 Sanjusangendomawari, Higashiyama Ward, Kyoto, 605-0941日本' }
-                    ]
-                }
-            ];
 
             const schedule = {
                 day1: [
@@ -238,127 +428,435 @@
                         title: '移動：前往京都', 
                         type: 'transport', 
                         transport: 'JR Haruka (約80分)', 
-                        link: 'https://www.instagram.com/reel/DNpk6SUR7MQ/',
+                        link: 'https://www.instagram.com/reel/DNpk6SUR7MQ/?igsh=MXBhNzl6d2xka2pxNw%3D%3D',
                         link_text: '查看購票/取票教學'
                     },
+                    { 
+                        time: '17:00', 
+                        title: '移動：前往飯店', 
+                        type: 'transport', 
+                        transport: 'Uber (BLACK VAN)', 
+                        note: '車程約 15 分鐘',
+                        address_jp: '〒604-8042<br>京都府京都市中京区新京極通り四条上る中之町538-1'
+                    },
+                    // 調整 2: 住宿參考資訊移至此處
                     { 
                         time: '18:00', 
                         title: '飯店 Check-in', 
                         type: 'hotel', 
                         desc: 'Super Hotel 四条河原町', 
-                        address_jp: '〒604-8042 京都府京都市中京区新京極通り四条上る中之町538-1'
+                        map_query: 'Super+Hotel+Kyoto+Shijokawaramachi',
+                        link: 'https://wind.suzukihiro.tw/shijyo-superhotel/',
+                        link_text: '參考資訊'
                     },
-                    { 
-                        time: '19:00', 
-                        title: '晚餐選擇 (三選一)', 
-                        type: 'food', 
-                        desc: `
-                            <div class="space-y-3 mt-2">
-                                <div class="border-l-4 border-orange-400 pl-2">
-                                    <div class="font-bold text-orange-800">1. 一蘭 京都河原町店</div>
-                                    <div class="text-xs text-gray-500">日本〒604-8041 Kyoto, Nakagyo Ward, Uraderacho, 598</div>
-                                    <a href="https://finduheart.com/kawaramachi" target="_blank" class="text-blue-500 text-xs underline">參考連結</a>
-                                </div>
-                                <div class="border-l-4 border-orange-400 pl-2">
-                                    <div class="font-bold text-orange-800">2. 名代豬排 かつくら (Sanjo)</div>
-                                    <div class="text-xs text-gray-500">日本〒604-8036 Kyoto, Nakagyo Ward, Ishibashicho, 16</div>
-                                    <a href="http://wind.suzukihiro.tw/katsukura/" target="_blank" class="text-blue-500 text-xs underline">參考連結</a>
-                                </div>
-                                <div class="border-l-4 border-orange-400 pl-2">
-                                    <div class="font-bold text-orange-800">3. 六角沾麵 Tsurukame (只收現金)</div>
-                                    <div class="text-xs text-gray-500">456-3 Matsugaecho, Nakagyo Ward, Kyoto, 604-8034日本</div>
-                                </div>
-                            </div>
-                        `,
-                        note: '視當下排隊情況選擇'
-                    },
-                    { time: '20:30', title: '自由活動', type: 'other', desc: '四條通逛街或休息' }
+                    { time: '18:30', title: '晚餐：(待定)', type: 'food', desc: '可能在京都車站或四條通', note: '視情況調整' },
+                    { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day2: [
-                    { time: '07:00', title: '飯店早餐', type: 'food' },
-                    { time: '08:20', title: '清水寺', type: 'sight', address_jp: '〒605-0862 京都府京都市東山区清水一丁目' },
-                    { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', address_jp: '京都市東山区下河原町484' },
-                    { time: '14:00', title: '伏見稻荷大社', type: 'sight', note: '千本鳥居' },
-                    { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店' }
+                    { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
+                    { 
+                        time: '08:00', 
+                        title: '交通 Taxi', 
+                        type: 'transport', 
+                        note: '計程車至「清水道頂端」，盡可能靠近清水寺門口',
+                        address_jp: '<strong>清水寺（きよみずでら）</strong><br>目的地：<strong>清水道（きよみずみち）頂上</strong><br>〒605-0862 京都府京都市東山区清水一丁目'
+                    },
+                    { 
+                        time: '08:20', 
+                        title: '清水寺', 
+                        type: 'sight', 
+                        desc: '清水舞台、二年坂', 
+                        map_query: 'Kiyomizu-dera',
+                        link: 'https://www.bugi.tw/2016/01/6.html'
+                    },
+                    { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', desc: 'ひさご 親子丼 (11:30-16:00)', address_jp: '京都市東山区下河原町484', map_query: 'Hisago+Kyoto', link: 'https://bobbyfun.tw/2023-05-04-2359/' },
+                    { 
+                        time: '13:30', 
+                        title: '交通 Taxi', 
+                        type: 'transport', 
+                        transport: 'TAXI (約15-20分鐘)', 
+                        note: '從葫蘆親子丼前往伏見稻荷大社',
+                        address_jp: '<strong>伏見稲荷大社（ふしみいなりたいしゃ）</strong><br>〒612-0882 京都府京都市伏見区深草藪之内町６８'
+                    },
+                    { 
+                        time: '14:00', 
+                        title: '伏見稻荷大社', 
+                        type: 'sight', 
+                        desc: '本殿 -> 千本鳥居 -> 奧社折返', 
+                        note: '不用爬整座山！', 
+                        map_query: 'Fushimi+Inari+Taisha',
+                        link: 'https://osaka.letsgojp.com/archives/72741/'
+                    },
+                    { 
+                        time: '17:00', 
+                        title: '交通 電車',
+                        type: 'transport', 
+                        transport: '京阪本線 (特急/急行/準急皆可)', 
+                        note: '從伏見稻荷大社步行至京阪「伏見稻荷站」搭車',
+                        address_label: '交通資訊',
+                        address_icon: 'fa-subway', 
+                        is_schedule: true, 
+                        address_jp: FushimiInariOutHTML
+                    },
+                    { 
+                        time: '17:30', 
+                        title: 'Super Hotel 京都・四条河原町店', 
+                        type: 'hotel', 
+                        desc: '回飯店休息/放東西', 
+                    },
+                    { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店 (訂位代號 #104024)', address_jp: '京都市中京区紙屋町674-2', map_query: 'Kyoto+Yakiniku+Hiro+Shijo+Kiyamachi', link: 'https://yakiniku-hiro.com/' },
+                    { time: '20:00', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day3: [
-                    { time: '07:00', title: '飯店早餐', type: 'food' },
-                    { time: '09:30', title: '嵐山小火車', type: 'sight', desc: '龜岡 -> 嵐山' },
-                    { time: '11:30', title: '午餐：嵐山よしむら', type: 'food', desc: '蕎麥麵' },
-                    { time: '16:30', title: '京都車站逛街', type: 'other', desc: '拉麵小路' }
-                ],
-                day4: [
-                    { time: '07:00', title: '飯店早餐', type: 'food' },
-                    { time: '09:30', title: '奈良公園', type: 'sight', desc: '與奈良鹿互動' },
-                    { time: '12:30', title: '午餐：奈良志津香釜飯', type: 'food', note: '建議提早排隊' },
+                    { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
                     { 
-                        time: '18:30', 
-                        title: '晚餐選擇 (整併項目)', 
+                        time: '08:00', 
+                        title: '交通：前往嵐山', 
+                        type: 'transport', 
+                        desc: '步行至地鐵四條站（約 10-15 分鐘）',
+                        transport: '地鐵至 JR 京都站 → JR 嵯峨野線 直達 JR 馬堀站',
+                        note: '從 JR 馬堀站步行至小火車起點站「トロッコ龜岡站」'
+                    },
+                    { 
+                        time: '09:30', 
+                        title: '嵐山小火車', 
+                        type: 'sight', 
+                        desc: '搭乘區間：龜岡 (起點) -> 嵐山', 
+                        note: '發車時間：09:30 至 09:50',
+                        map_query: 'トロッコ亀岡駅', 
+                        link: 'https://nicklee.tw/447/arashiyama-torokko/', 
+                        link_text: '購票/乘車資訊'
+                    },
+                    { 
+                        time: '11:30', 
+                        title: '午餐：嵐山よしむら', 
                         type: 'food', 
-                        desc: `
-                            <div class="space-y-2">
-                                <div class="font-bold">選項 A：居酒屋 炭火燒 串燒</div>
-                                <div class="font-bold">選項 B：京都車站美食街</div>
-                            </div>
-                        `
+                        desc: 'Yoshimura 蕎麥麵', 
+                        map_query: 'Arashiyama+Yoshimura',
+                        // 修改點 2：新增連結
+                        link: 'https://bobbyfun.tw/2023-10-24-2532/',
+                        link_text: '參考資訊'
+                    },
+                    { 
+                        time: '13:00', 
+                        title: '嵐山散策', 
+                        type: 'sight', 
+                        desc: '渡月橋、竹林之道' 
+                    },
+                    {
+                        time: '15:30',
+                        title: '交通：返回京都車站',
+                        type: 'transport',
+                        desc: '從 Torokko 嵐山站出發',
+                        transport: '步行 → JR 山陰本線 (嵯峨野線)',
+                        address_label: '交通資訊', 
+                        address_icon: 'fa-train', 
+                        is_schedule: true, 
+                        address_jp: ArashiyamaOutHTML 
+                    },
+                    {
+                        time: '16:30',
+                        title: '餐飲：京都車站（拉麵小路）',
+                        type: 'food',
+                        desc: '京都車站逛街',
+                        note: '京都駅ビル 10F',
+                        link: 'https://wow-japan.com/food-kyoto-station-ramen-koji/' 
+                    },
+                    {
+                        time: '19:00',
+                        title: '交通：返回市區',
+                        type: 'transport',
+                        desc: '京都站 → 四条河原町 (費用230日圓)',
+                        transport: '公車 4、17、205 (甲或乙)',
+                        address_label: '公車搭乘資訊', 
+                        address_icon: 'fa-bus', 
+                        is_schedule: true, 
+                        address_jp: BusTableHTML 
+                    },
+                    { 
+                        time: '19:30', 
+                        title: 'Super Hotel 京都・四条河原町店', 
+                        type: 'hotel', 
+                        desc: '回飯店休息/放東西' 
+                    },
+                    // 修改點 1：12/26 新增 20:00 自由活動
+                    { 
+                        time: '20:00', 
+                        title: '自由活動', 
+                        type: 'other', 
+                        desc: '四條通逛街或回飯店休息' 
                     }
                 ],
+                day4: [
+                    { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
+                    { 
+                        time: '08:00', 
+                        title: '交通：前往奈良', 
+                        type: 'transport', 
+                        transport: '公車轉 JR 奈良線 (快速列車)', 
+                        note: '總時間：約 60 - 75 分鐘',
+                        address_label: '交通資訊', 
+                        address_icon: 'fa-subway', 
+                        is_schedule: true, 
+                        address_jp: NaraTrafficInHTML 
+                    },
+                    { 
+                        time: '09:30', 
+                        title: '奈良公園', 
+                        type: 'sight', 
+                        desc: '與奈良鹿互動', 
+                        map_query: 'Nara+Park',
+                        link: 'https://www.tripmoment.com/trips/19105',
+                        link_text: '參考資訊'
+                    },
+                    { 
+                        time: '10:30', 
+                        title: '東大寺', 
+                        type: 'sight', 
+                        desc: '世界最大木造建築', 
+                        map_query: 'Todaiji',
+                        link: 'https://tw.wamazing.com/media/article/a-523/',
+                        link_text: '參考資訊'
+                    },
+                    { 
+                        time: '12:00', 
+                        title: '午餐選擇1：志津香釜飯', 
+                        type: 'food', 
+                        desc: '公園店 (就在奈良公園旁)', 
+                        note: '營業時間11點，建議提早排隊',
+                        map_query: 'Kamameshi+Shizuka+Koen-ten',
+                        link: 'https://bigsharkgogogo.tw/kamameshi-shizuka/',
+                        link_text: '參考資訊'
+                    },
+                    { 
+                        time: '12:00', 
+                        title: '午餐選擇2：麵鬪庵', 
+                        type: 'food', 
+                        desc: '豆皮烏龍麵 (就在商店街內)',
+                        map_query: 'Men+Tou+An',
+                        link: 'https://www.bring-you.info/zh-tw/nara-udon',
+                        link_text: '參考資訊'
+                    },
+                    { 
+                        time: '14:00', 
+                        title: '交通：返回京都', 
+                        type: 'transport', 
+                        transport: 'JR 奈良線 (快速列車)', 
+                        note: '預計搭乘時間：約 45 - 50 分鐘',
+                        address_label: 'JR 奈良站資訊', 
+                        address_icon: 'fa-train', 
+                        is_schedule: true, 
+                        address_jp: NaraTrafficOutHTML 
+                    },
+                    { 
+                        time: '15:30', 
+                        title: '京都 teamLab', 
+                        type: 'sight', 
+                        desc: '沉浸式光影展', 
+                        map_query: 'teamLab+Kyoto',
+                        link: 'https://www.teamlab.art/zh-hant/e/kyoto/',
+                        link_text: '參考資訊'
+                    },
+                    {
+                        time: '17:30',
+                        title: '交通：返回市區',
+                        type: 'transport',
+                        desc: '京都站 → 四条河原町 (費用230日圓)',
+                        transport: '公車 4、17、205 (甲或乙)',
+                        address_label: '公車搭乘資訊', 
+                        address_icon: 'fa-bus', 
+                        is_schedule: true, 
+                        address_jp: BusTableHTML 
+                    },
+                    // 修改點 4：12/27 新增 晚餐
+                    { 
+                        time: '18:30', 
+                        title: '晚餐：鳥貴族 (Torikizoku)', 
+                        type: 'food', 
+                        desc: '四条河原町店', 
+                        map_query: 'Torikizoku+Shijo+Kawaramachi',
+                        link: 'https://atm0710.pixnet.net/blog/posts/7122228027',
+                        link_text: '食記參考'
+                    },
+                    { time: '20:00', title: '自由活動', type: 'other', desc: '最後採買機會' }
+                ],
                 day5: [
-                    { time: '08:00', title: '飯店早餐 & Check-out', type: 'hotel' },
-                    { time: '10:00', title: '錦市場 最後採買', type: 'other' },
-                    { time: '16:15', title: '國泰 CX565 起飛', type: 'flight', desc: '18:30 抵達桃園' }
+                    { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
+                    { 
+                        time: '09:00', 
+                        title: '錦市場', 
+                        type: 'sight', 
+                        desc: '京都的廚房，吃吃喝喝', 
+                        map_query: 'Nishiki+Market',
+                        link: 'https://bobbyfun.tw/2024-01-09-2714/',
+                        link_text: '參考資訊'
+                    },
+                    { time: '12:00', title: '前往關西機場', type: 'transport', transport: 'JR Haruka (約80分)', note: '記得提前買票/取票' },
+                    { time: '16:15', title: '國泰 CX565 起飛', type: 'flight', desc: '18:30 抵達桃園機場' }
                 ]
             };
 
             const mustVisit = {
                 shops: [
-                    { area: '四條河原町/新京極', items: [{ name: '錦市場', hours: '10:00-18:00', desc: '京都的廚房' }] }
+                    {
+                        area: '清水寺鄰近',
+                        items: [
+                            {
+                                name: '二年坂：榻榻米星巴克',
+                                desc: '全世界唯一的「榻榻米星巴克」',
+                                address: '日本〒605-0826 Kyoto, Higashiyama Ward, Masuyacho, 349',
+                                link: 'https://angelala.tw/starbucks-kyoto/'
+                            },
+                            {
+                                name: '二年坂：石畳',
+                                desc: '霜淇淋推薦',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '清水坂：八ツ橋しゅ泡芙',
+                                address: '京都清水坂',
+                                note: '《食尚玩家》也介紹過的小吃甜品店，販售有咖啡、抹茶、抹茶冰淇淋、肉桂泡芙、冰淇淋泡芙。',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '清水坂：比沙家 京都清水坂本店',
+                                address: '京都清水坂',
+                                note: '精心挑選含糖量大的栗子，講究天然無添加物',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '清水坂：清水順正 おかべ家',
+                                address: '京都清水坂',
+                                note: '湯豆腐料理，體驗自己從豆乳火鍋中做出豆皮吃的喜悅',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '三年坂：有喜屋',
+                                desc: '「親子丼」超強大，炸蝦親子丼的麵衣酥脆美味，鮮蝦彈牙可口；蛋花軟嫩滑口，搭配美味的日本米飯',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '三年坂：藤菜美 (抹茶/糰子)',
+                                desc: '醬油丸子專賣店',
+                                note: '保留了京都傳統風味',
+                                address: '三年坂本店',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '三年坂：甘党茶屋 京 梅園',
+                                desc: '日式甜點店',
+                                note: '創立於1927年，古色古香，室內寬敞，推薦日式甜點',
+                                address: '清水店',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '三年坂：喜楽庵 岡本',
+                                desc: '炸物推薦',
+                                address: '産寧坂店',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+                            {
+                                name: '三年坂：阿古屋茶屋',
+                                desc: '茶泡飯吃到飽',
+                                note: '京都在地出名的野菜和漬物，適合想體驗傳統庶民料理的旅人',
+                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
+                            },
+
+                        ]
+                    },
+                    {
+                        area: '四條通/購物',
+                        items: [
+                            { 
+                                name: 'SUGI藥局四条河原町店', 
+                                address: '京都府京都市中京区河原町通蛸薬師下る塩屋町343番地1',
+                                hours: '10:00〜隔日05:00',
+                                link: 'https://osaka.letsgojp.com/archives/727106/'
+                            },
+                            { 
+                                name: 'Onitsuka Tiger (京都店)', 
+                                address: '385, Komeyacho, Shijo-agaru, Kawaramachi-Dori',
+                                hours: '11:00〜21:00'
+                            },
+                            { 
+                                name: 'Montbell (京都店)', 
+                                address: '京都市中京区新京極通蛸薬師下ル東側町530-1',
+                                hours: '11:00〜21:00'
+                            }
+                        ]
+                    }
+                ],
+                food: [
+                    { name: '錦市場', desc: '各種京都小吃、漬物、玉子燒' }
                 ]
             };
 
-            const checkList = {
-                "必帶物品": ["護照", "日幣現金", "行動電源"]
-            };
+            const checkList = ref({
+                '🎒 上飛機隨身包 (隨身攜帶)': [
+                    '手機', 'SIM卡 (網路)', '錢包 (外幣、些許台幣)', '交通卡', 
+                    '護照 (正本)', '簽證', '電子機票', '訂房資料', '旅遊票券',
+                    '衛生紙/濕紙巾', '摺疊雨傘', '行動電源 (不可托運！)', '充電線', '耳機', '耳塞'
+                ],
+                '📄 托運 - 衣物類': [
+                    '足夠衣物', '內衣褲', '襪子', '禦寒外套'
+                ],
+                '🧴 托運 - 雜物/藥品': [
+                    '隱形眼鏡/藥水', '個人藥品', '口罩 (備用)'
+                ]
+            });
 
             const getTypeColor = (type) => {
-                const colors = {
-                    transport: 'bg-blue-500',
-                    flight: 'bg-sky-600',
-                    hotel: 'bg-indigo-500',
+                const map = {
+                    flight: 'bg-sky-500',
+                    transport: 'bg-blue-600',
                     food: 'bg-orange-500',
-                    sight: 'bg-emerald-600',
-                    other: 'bg-gray-500'
+                    sight: 'bg-green-600',
+                    shop: 'bg-pink-500',
+                    hotel: 'bg-indigo-500',
+                    free: 'bg-purple-500',
+                    other: 'bg-gray-500' 
                 };
-                return colors[type] || 'bg-gray-500';
+                return map[type] || 'bg-gray-500';
             };
 
             const getIcon = (type) => {
-                const icons = {
-                    transport: 'fas fa-train',
+                const map = {
                     flight: 'fas fa-plane',
-                    hotel: 'fas fa-hotel',
+                    transport: 'fas fa-train',
                     food: 'fas fa-utensils',
-                    sight: 'fas fa-camera',
-                    other: 'fas fa-walking'
+                    sight: 'fas fa-mountain',
+                    shop: 'fas fa-shopping-bag',
+                    hotel: 'fas fa-bed',
+                    free: 'fas fa-leaf',
+                    other: 'fas fa-ellipsis-h' 
                 };
-                return icons[type] || 'fas fa-dot-circle';
+                return map[type] || 'fas fa-question';
             };
 
             const getTypeLabel = (type) => {
-                const labels = {
-                    transport: '交通',
+                const map = {
                     flight: '航班',
-                    hotel: '住宿',
+                    transport: '交通',
                     food: '餐飲',
                     sight: '景點',
-                    other: '活動'
+                    shop: '購物',
+                    hotel: '住宿',
+                    free: '自由活動',
+                    other: '其他'
                 };
-                return labels[type] || '行程';
+                return map[type] || '未知';
             };
 
             return {
-                currentTab, dateLabels, schedule, mustVisit, checkList, incenseData,
-                refreshApp, getTypeColor, getIcon, getTypeLabel
+                currentTab,
+                dateLabels,
+                schedule,
+                mustVisit,
+                checkList,
+                getTypeColor,
+                getIcon,
+                getTypeLabel,
+                refreshApp 
             };
         }
     }).mount('#app');
