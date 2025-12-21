@@ -83,7 +83,7 @@
 
         <div v-for="d in 5" :key="d">
             <div v-if="currentTab === 'day'+d" class="space-y-4">
-                <div v-if="schedule['day'+d].length === 0" class="text-center text-gray-400 py-10">
+                <div v-if="!schedule['day'+d] || schedule['day'+d].length === 0" class="text-center text-gray-400 py-10">
                     <p>行程規劃中...</p>
                 </div>
                 
@@ -173,10 +173,10 @@
 
                                 <div class="mt-3 flex gap-2">
                                     <a :href="'https://www.google.com/maps/search/?api=1&query=' + shop.name + (shop.address ? ' ' + shop.address : ' Kyoto')" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow-sm">
-                                        <i class="fas fa-map-marker-alt"></i> 導航
+                                            <i class="fas fa-map-marker-alt"></i> 導航
                                     </a>
                                     <a v-if="shop.link" :href="shop.link" target="_blank" class="flex-1 bg-gray-100 text-gray-700 text-center py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-200">
-                                        <i class="fas fa-info-circle"></i> 參考資訊
+                                            <i class="fas fa-info-circle"></i> 參考資訊
                                     </a>
                                 </div>
                             </div>
@@ -449,7 +449,40 @@
                         link: 'https://wind.suzukihiro.tw/shijyo-superhotel/',
                         link_text: '參考資訊'
                     },
-                    { time: '18:30', title: '晚餐：(待定)', type: 'food', desc: '可能在京都車站或四條通', note: '視情況調整' },
+                    // =========================
+                    //   Day 1 晚餐修改區塊
+                    // =========================
+                    { 
+                        time: '18:30', 
+                        title: '晚餐選擇 1：一蘭拉麵', 
+                        type: 'food', 
+                        desc: '京都河原町店', 
+                        address_jp: '〒604-8041<br>Kyoto, Nakagyo Ward, Uraderacho, 598',
+                        map_query: 'Ichiran+Kyoto+Kawaramachi',
+                        link: 'https://finduheart.com/kawaramachi',
+                        link_text: '食記參考'
+                    },
+                    { 
+                        time: '18:30', 
+                        title: '晚餐選擇 2：名代豬排', 
+                        type: 'food', 
+                        desc: 'Katsukura Sanjo (かつくら)', 
+                        address_jp: '〒604-8036<br>Kyoto, Nakagyo Ward, Ishibashicho, 16<br>三条通寺町東入ル',
+                        map_query: 'Katsukura+Sanjo',
+                        link: 'https://wind.suzukihiro.tw/katsukura/',
+                        link_text: '食記參考'
+                    },
+                    { 
+                        time: '18:30', 
+                        title: '晚餐選擇 3：六角沾麵', 
+                        type: 'food', 
+                        desc: 'Tsurukame (只收現金)', 
+                        address_jp: '〒604-8034<br>456-3 Matsugaecho, Nakagyo Ward, Kyoto',
+                        map_query: 'Rokkaku+Tsukemen+Tsurukame',
+                        link: 'https://wind.suzukihiro.tw/tsurukame-rokkaku/',
+                        link_text: '食記參考'
+                    },
+                    // =========================
                     { time: '19:30', title: '自由活動', type: 'other', desc: '四條通逛街或回飯店休息' }
                 ],
                 day2: [
@@ -606,261 +639,3 @@
                         type: 'sight', 
                         desc: '與奈良鹿互動', 
                         map_query: 'Nara+Park',
-                        link: 'https://www.tripmoment.com/trips/19105',
-                        link_text: '參考資訊'
-                    },
-                    { 
-                        time: '10:30', 
-                        title: '東大寺', 
-                        type: 'sight', 
-                        desc: '世界最大木造建築', 
-                        map_query: 'Todaiji',
-                        link: 'https://tw.wamazing.com/media/article/a-523/',
-                        link_text: '參考資訊'
-                    },
-                    { 
-                        time: '12:00', 
-                        title: '午餐選擇1：志津香釜飯', 
-                        type: 'food', 
-                        desc: '公園店 (就在奈良公園旁)', 
-                        note: '營業時間11點，建議提早排隊',
-                        map_query: 'Kamameshi+Shizuka+Koen-ten',
-                        link: 'https://bigsharkgogogo.tw/kamameshi-shizuka/',
-                        link_text: '參考資訊'
-                    },
-                    { 
-                        time: '12:00', 
-                        title: '午餐選擇2：麵鬪庵', 
-                        type: 'food', 
-                        desc: '豆皮烏龍麵 (就在商店街內)',
-                        map_query: 'Men+Tou+An',
-                        link: 'https://www.bring-you.info/zh-tw/nara-udon',
-                        link_text: '參考資訊'
-                    },
-                    { 
-                        time: '14:00', 
-                        title: '交通：返回京都', 
-                        type: 'transport', 
-                        transport: 'JR 奈良線 (快速列車)', 
-                        note: '預計搭乘時間：約 45 - 50 分鐘',
-                        address_label: 'JR 奈良站資訊', 
-                        address_icon: 'fa-train', 
-                        is_schedule: true, 
-                        address_jp: NaraTrafficOutHTML 
-                    },
-                    { 
-                        time: '15:30', 
-                        title: '京都 teamLab', 
-                        type: 'sight', 
-                        desc: '沉浸式光影展', 
-                        map_query: 'teamLab+Kyoto',
-                        link: 'https://www.teamlab.art/zh-hant/e/kyoto/',
-                        link_text: '參考資訊'
-                    },
-                    {
-                        time: '17:30',
-                        title: '交通：返回市區',
-                        type: 'transport',
-                        desc: '京都站 → 四条河原町 (費用230日圓)',
-                        transport: '公車 4、17、205 (甲或乙)',
-                        address_label: '公車搭乘資訊', 
-                        address_icon: 'fa-bus', 
-                        is_schedule: true, 
-                        address_jp: BusTableHTML 
-                    },
-                    // 修改點 4：12/27 新增 晚餐
-                    { 
-                        time: '18:30', 
-                        title: '晚餐：鳥貴族 (Torikizoku)', 
-                        type: 'food', 
-                        desc: '四条河原町店', 
-                        map_query: 'Torikizoku+Shijo+Kawaramachi',
-                        link: 'https://atm0710.pixnet.net/blog/posts/7122228027',
-                        link_text: '食記參考'
-                    },
-                    { time: '20:00', title: '自由活動', type: 'other', desc: '最後採買機會' }
-                ],
-                day5: [
-                    { time: '07:00', title: '飯店早餐', type: 'food', desc: 'Super Hotel 健康早餐' },
-                    { 
-                        time: '09:00', 
-                        title: '錦市場', 
-                        type: 'sight', 
-                        desc: '京都的廚房，吃吃喝喝', 
-                        map_query: 'Nishiki+Market',
-                        link: 'https://bobbyfun.tw/2024-01-09-2714/',
-                        link_text: '參考資訊'
-                    },
-                    { time: '12:00', title: '前往關西機場', type: 'transport', transport: 'JR Haruka (約80分)', note: '記得提前買票/取票' },
-                    { time: '16:15', title: '國泰 CX565 起飛', type: 'flight', desc: '18:30 抵達桃園機場' }
-                ]
-            };
-
-            const mustVisit = {
-                shops: [
-                    {
-                        area: '清水寺鄰近',
-                        items: [
-                            {
-                                name: '二年坂：榻榻米星巴克',
-                                desc: '全世界唯一的「榻榻米星巴克」',
-                                address: '日本〒605-0826 Kyoto, Higashiyama Ward, Masuyacho, 349',
-                                link: 'https://angelala.tw/starbucks-kyoto/'
-                            },
-                            {
-                                name: '二年坂：石畳',
-                                desc: '霜淇淋推薦',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-                            {
-                                name: '清水坂：八ツ橋しゅ泡芙',
-                                address: '京都清水坂',
-                                note: '《食尚玩家》也介紹過的小吃甜品店，販售有咖啡、抹茶、抹茶冰淇淋、肉桂泡芙、冰淇淋泡芙。',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-                            {
-                                name: '清水坂：比沙家 京都清水坂本店',
-                                address: '京都清水坂',
-                                note: '精心挑選含糖量大的栗子，講究天然無添加物',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-                            {
-                                name: '清水坂：清水順正 おかべ家',
-                                address: '京都清水坂',
-                                note: '湯豆腐料理，體驗自己從豆乳火鍋中做出豆皮吃的喜悅',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-                            {
-                                name: '三年坂：有喜屋',
-                                desc: '「親子丼」超強大，炸蝦親子丼的麵衣酥脆美味，鮮蝦彈牙可口；蛋花軟嫩滑口，搭配美味的日本米飯',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-                            {
-                                name: '三年坂：藤菜美 (抹茶/糰子)',
-                                desc: '醬油丸子專賣店',
-                                note: '保留了京都傳統風味',
-                                address: '三年坂本店',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-                            {
-                                name: '三年坂：甘党茶屋 京 梅園',
-                                desc: '日式甜點店',
-                                note: '創立於1927年，古色古香，室內寬敞，推薦日式甜點',
-                                address: '清水店',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-                            {
-                                name: '三年坂：喜楽庵 岡本',
-                                desc: '炸物推薦',
-                                address: '産寧坂店',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-                            {
-                                name: '三年坂：阿古屋茶屋',
-                                desc: '茶泡飯吃到飽',
-                                note: '京都在地出名的野菜和漬物，適合想體驗傳統庶民料理的旅人',
-                                link: 'https://www.bring-you.info/zh-tw/sannenzaka-cuisine'
-                            },
-
-                        ]
-                    },
-                    {
-                        area: '四條通/購物',
-                        items: [
-                            { 
-                                name: 'SUGI藥局四条河原町店', 
-                                address: '京都府京都市中京区河原町通蛸薬師下る塩屋町343番地1',
-                                hours: '10:00〜隔日05:00',
-                                link: 'https://osaka.letsgojp.com/archives/727106/'
-                            },
-                            { 
-                                name: 'Onitsuka Tiger (京都店)', 
-                                address: '385, Komeyacho, Shijo-agaru, Kawaramachi-Dori',
-                                hours: '11:00〜21:00'
-                            },
-                            { 
-                                name: 'Montbell (京都店)', 
-                                address: '京都市中京区新京極通蛸薬師下ル東側町530-1',
-                                hours: '11:00〜21:00'
-                            }
-                        ]
-                    }
-                ],
-                food: [
-                    { name: '錦市場', desc: '各種京都小吃、漬物、玉子燒' }
-                ]
-            };
-
-            const checkList = ref({
-                '🎒 上飛機隨身包 (隨身攜帶)': [
-                    '手機', 'SIM卡 (網路)', '錢包 (外幣、些許台幣)', '交通卡', 
-                    '護照 (正本)', '簽證', '電子機票', '訂房資料', '旅遊票券',
-                    '衛生紙/濕紙巾', '摺疊雨傘', '行動電源 (不可托運！)', '充電線', '耳機', '耳塞'
-                ],
-                '📄 托運 - 衣物類': [
-                    '足夠衣物', '內衣褲', '襪子', '禦寒外套'
-                ],
-                '🧴 托運 - 雜物/藥品': [
-                    '隱形眼鏡/藥水', '個人藥品', '口罩 (備用)'
-                ]
-            });
-
-            const getTypeColor = (type) => {
-                const map = {
-                    flight: 'bg-sky-500',
-                    transport: 'bg-blue-600',
-                    food: 'bg-orange-500',
-                    sight: 'bg-green-600',
-                    shop: 'bg-pink-500',
-                    hotel: 'bg-indigo-500',
-                    free: 'bg-purple-500',
-                    other: 'bg-gray-500' 
-                };
-                return map[type] || 'bg-gray-500';
-            };
-
-            const getIcon = (type) => {
-                const map = {
-                    flight: 'fas fa-plane',
-                    transport: 'fas fa-train',
-                    food: 'fas fa-utensils',
-                    sight: 'fas fa-mountain',
-                    shop: 'fas fa-shopping-bag',
-                    hotel: 'fas fa-bed',
-                    free: 'fas fa-leaf',
-                    other: 'fas fa-ellipsis-h' 
-                };
-                return map[type] || 'fas fa-question';
-            };
-
-            const getTypeLabel = (type) => {
-                const map = {
-                    flight: '航班',
-                    transport: '交通',
-                    food: '餐飲',
-                    sight: '景點',
-                    shop: '購物',
-                    hotel: '住宿',
-                    free: '自由活動',
-                    other: '其他'
-                };
-                return map[type] || '未知';
-            };
-
-            return {
-                currentTab,
-                dateLabels,
-                schedule,
-                mustVisit,
-                checkList,
-                getTypeColor,
-                getIcon,
-                getTypeLabel,
-                refreshApp 
-            };
-        }
-    }).mount('#app');
-</script>
-
-</body>
-</html>
