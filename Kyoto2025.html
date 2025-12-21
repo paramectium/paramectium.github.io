@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <base href="https://paramectium.github.io/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>京阪五日遊</title>
     
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#2563eb">
@@ -17,9 +20,11 @@
         .card { transition: all 0.2s; }
         .card:active { transform: scale(0.98); }
         .jp-text { font-family: "Hiragino Sans", "Meiryo", sans-serif; }
+        /* 隱藏捲軸但保持功能 */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 增加給司機看的文字大小 */
         .driver-text { font-size: 1.25rem; }
         
         @media (min-width: 640px) {
@@ -61,6 +66,11 @@
                 class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
                 <i class="fas fa-info-circle"></i> 住宿/航班
             </button>
+            <button @click="currentTab = 'checklist'" 
+                :class="currentTab === 'checklist' ? 'bg-emerald-600 text-white shadow-md' : 'bg-emerald-50 text-emerald-600'"
+                class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap">
+                <i class="fas fa-check-square"></i> 清單
+            </button>
         </div>
     </div>
 
@@ -68,6 +78,10 @@
 
         <div v-for="d in 5" :key="d">
             <div v-if="currentTab === 'day'+d" class="space-y-4">
+                <div v-if="schedule['day'+d].length === 0" class="text-center text-gray-400 py-10">
+                    <p>行程規劃中...</p>
+                </div>
+                
                 <div v-for="(item, index) in schedule['day'+d]" :key="index" class="card bg-white rounded-xl shadow overflow-hidden flex min-h-[100px] border border-gray-100">
                     
                     <div :class="getTypeColor(item.type)" class="icon-col w-20 sm:w-24 flex-shrink-0 flex flex-col items-center justify-center text-white p-1 text-center">
@@ -75,26 +89,14 @@
                         <span class="text-xs font-bold break-words w-full">{{ getTypeLabel(item.type) }}</span>
                     </div>
 
-                    <div class="content-col flex-1 p-3 sm:p-4 flex flex-col justify-center">
+                    <div :class="['content-col flex-1 p-3 sm:p-4 flex flex-col justify-center', item.type === 'food' ? 'bg-orange-50' : '']">
                         <div class="flex justify-between items-start mb-1">
                             <span class="text-sm font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{{ item.time }}</span>
                         </div>
                         <h3 class="text-lg font-bold text-gray-800 leading-tight mb-2 sm:text-xl">{{ item.title }}</h3>
                         
                         <div class="text-sm text-gray-600 space-y-2">
-                            <p v-if="item.desc" class="text-gray-700">{{ item.desc }}</p>
-
-                            <div v-if="item.options" class="space-y-3 mt-2">
-                                <div v-for="(opt, oIdx) in item.options" :key="oIdx" class="bg-orange-50 p-3 rounded-lg border border-orange-100 shadow-sm">
-                                    <p class="font-bold text-orange-800 mb-1">{{ opt.name }}</p>
-                                    <p v-if="opt.nav" class="text-xs text-orange-700/70 mb-1">
-                                        <i class="fas fa-location-arrow mr-1"></i>{{ opt.nav }}
-                                    </p>
-                                    <a v-if="opt.link" :href="opt.link" target="_blank" class="inline-block text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded font-bold">
-                                        查看參考資訊
-                                    </a>
-                                </div>
-                            </div>
+                            <div v-if="item.desc" class="text-gray-700" v-html="item.desc"></div>
                             
                             <p v-if="item.transport" class="text-blue-700 bg-blue-50 px-2 py-1 rounded text-xs inline-block font-medium">
                                 <i class="fas fa-arrow-right mr-1"></i> {{ item.transport }}
@@ -125,59 +127,73 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="text-center text-xs text-gray-400 mt-6 mb-2">
+                    End of {{ dateLabels[d-1] }}
+                </div>
             </div>
         </div>
 
         <div v-if="currentTab === 'must'" class="space-y-6">
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-600">
-                <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center">
-                    <i class="fas fa-wind text-amber-600 mr-2"></i> 線香購買參考資訊
-                </h3>
+            
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-purple-500">線香購買參考資訊</h3>
                 <div class="space-y-4">
-                    <div class="border-b pb-3">
-                        <p class="font-bold text-amber-800">一. 松榮堂 (香老舖)</p>
-                        <div class="ml-2 mt-2 space-y-3">
-                            <div class="bg-amber-50 p-2 rounded">
-                                <p class="text-sm font-bold">1. 產寧坂店</p>
-                                <p class="text-xs text-gray-600">營業時間 10:00–18:00</p>
-                                <p class="text-xs text-gray-500 mt-1">日本〒605-0862 Kyoto, Higashiyama Ward, Kiyomizu 334</p>
-                            </div>
-                            <div class="bg-amber-50 p-2 rounded">
-                                <p class="text-sm font-bold">2. 松榮堂 香音 (JR京都伊勢丹)</p>
-                                <p class="text-xs text-gray-600">營業時間 10:00–20:00</p>
-                                <p class="text-xs text-gray-500 mt-1">日本〒600-8216 Kyoto, Shimogyo Ward, Higashishiokojicho, JR京都伊勢丹 10F</p>
-                            </div>
-                            <div class="bg-amber-50 p-2 rounded">
-                                <p class="text-sm font-bold">3. 京都本店附近分店</p>
-                                <p class="text-xs text-gray-500 mt-1">79 Tachiuri Nishimachi, Shimogyo Ward, Kyoto, 600-8007 日本</p>
+                    <div v-for="(category, cIdx) in incenseData" :key="cIdx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="font-bold text-lg text-purple-700 mb-2 border-b pb-1">{{ category.brand }}</h4>
+                        <div class="space-y-4 mt-3">
+                            <div v-for="(shop, sIdx) in category.items" :key="sIdx" class="bg-purple-50/50 p-3 rounded-lg border border-purple-100">
+                                <div class="font-bold text-gray-800">{{ shop.name }}</div>
+                                <div v-if="shop.hours" class="text-xs text-orange-600 mt-1 font-bold"><i class="far fa-clock mr-1"></i>{{ shop.hours }}</div>
+                                <div class="text-xs text-gray-600 mt-1 jp-text">{{ shop.address }}</div>
+                                <div class="mt-2">
+                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(shop.address)" target="_blank" class="inline-block bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-bold">
+                                        <i class="fas fa-location-arrow mr-1"></i> 開啟導航
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div>
-                        <p class="font-bold text-amber-800">二. 三十三間堂</p>
-                        <p class="text-sm ml-2">限定「名香」線香</p>
                     </div>
                 </div>
             </div>
 
             <div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-pink-500">推薦餐廳</h3>
-                <div class="grid grid-cols-1 gap-4">
-                    <div v-for="(food, idx) in mustVisit.food" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                        <h4 class="font-bold text-lg text-orange-600">{{ food.name }}</h4>
-                        <p class="text-sm text-gray-600 mt-1">{{ food.desc }}</p>
+                <h3 class="text-xl font-bold text-gray-800 mb-3 pl-2 border-l-4 border-pink-500">逛街景點/商店</h3>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div v-for="(area, areaIdx) in mustVisit.shops" :key="areaIdx" class="sm:col-span-2">
+                        <h4 class="font-bold text-lg text-gray-700 mb-3 mt-4 pl-1 flex items-center border-b border-gray-200 pb-1">
+                            <i class="fas fa-map-pin text-pink-500 mr-2"></i> {{ area.area }}
+                        </h4>
+                        <div class="grid md:grid-cols-3 sm:grid-cols-2 gap-3">
+                            <div v-for="(shop, idx) in area.items" :key="idx" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                <h4 class="font-bold text-lg text-pink-600">{{ shop.name }}</h4>
+                                <p v-if="shop.desc" class="text-sm text-gray-800 font-bold mt-1">{{ shop.desc }}</p>
+                                <p v-if="shop.hours" class="text-xs text-orange-600 font-bold mt-1"><i class="far fa-clock"></i> {{ shop.hours }}</p>
+                                <div class="mt-3 flex gap-2">
+                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(shop.name + (shop.address ? ' ' + shop.address : ''))" target="_blank" class="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold shadow-sm">
+                                        <i class="fas fa-map-marker-alt"></i> 導航
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div v-if="currentTab === 'info'" class="space-y-4">
-             <div class="bg-white p-5 rounded-xl shadow border-l-8 border-indigo-500">
+        <div v-if="currentTab === 'info'" class="space-y-4 grid sm:grid-cols-2 gap-4">
+            <div class="bg-white p-5 rounded-xl shadow border-l-8 border-indigo-500 sm:col-span-2">
                 <h3 class="text-lg font-bold text-gray-500 mb-1">住宿飯店</h3>
                 <p class="text-xl font-bold text-indigo-700">Super Hotel 京都・四条河原町店</p>
-                <p class="text-sm text-gray-600 mt-2 jp-text">〒604-8042 京都府京都市中京区新京極通り四条上る中之町538-1</p>
+                <div class="my-4 bg-gray-50 p-3 rounded border border-gray-200">
+                    <p class="text-xs text-gray-500 font-bold mb-1"><i class="fas fa-taxi"></i> 導航：</p>
+                    <p class="text-lg font-bold text-gray-900 mt-1 jp-text leading-relaxed select-all">〒604-8042 京都府京都市中京区新京極通り四条上る中之町538-1</p>
+                </div>
             </div>
-        </div>
+            </div>
+
+        <div v-if="currentTab === 'checklist'" class="space-y-4">
+            </div>
 
     </div>
 </div>
@@ -196,78 +212,121 @@
                 window.location.href = url.toString();
             };
 
+            const incenseData = [
+                {
+                    brand: '一. 松榮堂',
+                    items: [
+                        { name: '1. 香老舖 松榮堂 產寧坂店', hours: '10:00–18:00', address: '334 Kiyomizu, Higashiyama Ward, Kyoto, 605-0862日本' },
+                        { name: '2. 松榮堂 香音 (JR京都伊勢丹)', hours: '10:00–20:00', address: '日本〒600-8216 Kyoto, Shimogyo Ward, Higashishiokojicho, ジェイアール京都伊勢丹 10F' },
+                        { name: '3. 松榮堂 四條店', hours: '10:00–19:00', address: 'Japanese Stationery / Japanese Goods, 79番地 Tachiuri Nishimachi, Shimogyo Ward, Kyoto, 600-8007日本' }
+                    ]
+                },
+                {
+                    brand: '二. 三十三間堂',
+                    items: [
+                        { name: '三十三間堂 限定「名香」', hours: '08:30–17:00', address: '657 Sanjusangendomawari, Higashiyama Ward, Kyoto, 605-0941日本' }
+                    ]
+                }
+            ];
+
             const schedule = {
                 day1: [
-                    { time: '11:15', title: '國泰 CX564 起飛', type: 'flight', desc: '14:55 抵達關西機場' },
-                    { time: '15:30', title: '移動：前往京都', type: 'transport', transport: 'JR Haruka (約80分)' },
-                    { time: '18:00', title: '飯店 Check-in', type: 'hotel', desc: 'Super Hotel 四条河原町' },
+                    { time: '07:30', title: '前往桃園機場', type: 'transport', desc: '集合並辦理登機手續' },
+                    { time: '11:15', title: '國泰 CX564 起飛', type: 'flight', desc: '14:55 抵達關西機場', note: '午餐：飛機餐' },
                     { 
-                        time: '18:30', 
-                        title: '晚餐餐飲選擇', 
+                        time: '15:30', 
+                        title: '移動：前往京都', 
+                        type: 'transport', 
+                        transport: 'JR Haruka (約80分)', 
+                        link: 'https://www.instagram.com/reel/DNpk6SUR7MQ/',
+                        link_text: '查看購票/取票教學'
+                    },
+                    { 
+                        time: '18:00', 
+                        title: '飯店 Check-in', 
+                        type: 'hotel', 
+                        desc: 'Super Hotel 四条河原町', 
+                        address_jp: '〒604-8042 京都府京都市中京区新京極通り四条上る中之町538-1'
+                    },
+                    { 
+                        time: '19:00', 
+                        title: '晚餐選擇 (三選一)', 
                         type: 'food', 
-                        options: [
-                            { 
-                                name: '晚餐選擇1：一蘭 京都河原町店', 
-                                nav: '日本〒604-8041 Kyoto, Nakagyo Ward, Uraderacho, 598', 
-                                link: 'https://finduheart.com/kawaramachi' 
-                            },
-                            { 
-                                name: '晚餐選擇2：名代豬排 かつくら (Katsukura Sanjo)', 
-                                nav: '日本〒604-8036 Kyoto, Nakagyo Ward, Ishibashicho, 16 三条通寺町東入ル', 
-                                link: 'http://wind.suzukihiro.tw/katsukura/' 
-                            },
-                            { 
-                                name: '晚餐選擇3：六角沾麵 Tsurukame (只收現金)', 
-                                nav: '456-3 Matsugaecho, Nakagyo Ward, Kyoto, 604-8034日本' 
-                            }
-                        ]
-                    }
+                        desc: `
+                            <div class="space-y-3 mt-2">
+                                <div class="border-l-4 border-orange-400 pl-2">
+                                    <div class="font-bold text-orange-800">1. 一蘭 京都河原町店</div>
+                                    <div class="text-xs text-gray-500">日本〒604-8041 Kyoto, Nakagyo Ward, Uraderacho, 598</div>
+                                    <a href="https://finduheart.com/kawaramachi" target="_blank" class="text-blue-500 text-xs underline">參考連結</a>
+                                </div>
+                                <div class="border-l-4 border-orange-400 pl-2">
+                                    <div class="font-bold text-orange-800">2. 名代豬排 かつくら (Sanjo)</div>
+                                    <div class="text-xs text-gray-500">日本〒604-8036 Kyoto, Nakagyo Ward, Ishibashicho, 16</div>
+                                    <a href="http://wind.suzukihiro.tw/katsukura/" target="_blank" class="text-blue-500 text-xs underline">參考連結</a>
+                                </div>
+                                <div class="border-l-4 border-orange-400 pl-2">
+                                    <div class="font-bold text-orange-800">3. 六角沾麵 Tsurukame (只收現金)</div>
+                                    <div class="text-xs text-gray-500">456-3 Matsugaecho, Nakagyo Ward, Kyoto, 604-8034日本</div>
+                                </div>
+                            </div>
+                        `,
+                        note: '視當下排隊情況選擇'
+                    },
+                    { time: '20:30', title: '自由活動', type: 'other', desc: '四條通逛街或休息' }
                 ],
                 day2: [
-                    { time: '08:20', title: '清水寺', type: 'sight', desc: '清水舞台、二年坂' },
+                    { time: '07:00', title: '飯店早餐', type: 'food' },
+                    { time: '08:20', title: '清水寺', type: 'sight', address_jp: '〒605-0862 京都府京都市東山区清水一丁目' },
                     { time: '12:00', title: '午餐：葫蘆親子丼', type: 'food', address_jp: '京都市東山区下河原町484' },
-                    { time: '14:00', title: '伏見稻荷大社', type: 'sight', desc: '千本鳥居' },
+                    { time: '14:00', title: '伏見稻荷大社', type: 'sight', note: '千本鳥居' },
                     { time: '18:30', title: '晚餐：京的燒肉處 弘', type: 'food', desc: '四條木屋町店' }
                 ],
                 day3: [
+                    { time: '07:00', title: '飯店早餐', type: 'food' },
                     { time: '09:30', title: '嵐山小火車', type: 'sight', desc: '龜岡 -> 嵐山' },
                     { time: '11:30', title: '午餐：嵐山よしむら', type: 'food', desc: '蕎麥麵' },
-                    { time: '16:30', title: '京都車站逛街', type: 'sight', desc: '拉麵小路' }
+                    { time: '16:30', title: '京都車站逛街', type: 'other', desc: '拉麵小路' }
                 ],
                 day4: [
+                    { time: '07:00', title: '飯店早餐', type: 'food' },
                     { time: '09:30', title: '奈良公園', type: 'sight', desc: '與奈良鹿互動' },
+                    { time: '12:30', title: '午餐：奈良志津香釜飯', type: 'food', note: '建議提早排隊' },
                     { 
                         time: '18:30', 
-                        title: '晚餐餐飲選擇', 
-                        type: 'food',
-                        options: [
-                            { name: '選擇 A：在地美食推薦', nav: '奈良/京都車站周邊' },
-                            { name: '選擇 B：回市區自由用餐', nav: '四条河原町周邊' }
-                        ]
+                        title: '晚餐選擇 (整併項目)', 
+                        type: 'food', 
+                        desc: `
+                            <div class="space-y-2">
+                                <div class="font-bold">選項 A：居酒屋 炭火燒 串燒</div>
+                                <div class="font-bold">選項 B：京都車站美食街</div>
+                            </div>
+                        `
                     }
                 ],
                 day5: [
-                    { time: '10:00', title: '錦市場散策', type: 'sight', desc: '最後採買' },
-                    { time: '13:00', title: '移動：前往機場', type: 'transport', transport: 'JR Haruka' },
-                    { time: '16:15', title: '國泰 CX565 起飛', type: 'flight', desc: '18:30 抵達桃園機場' }
+                    { time: '08:00', title: '飯店早餐 & Check-out', type: 'hotel' },
+                    { time: '10:00', title: '錦市場 最後採買', type: 'other' },
+                    { time: '16:15', title: '國泰 CX565 起飛', type: 'flight', desc: '18:30 抵達桃園' }
                 ]
             };
 
             const mustVisit = {
-                food: [
-                    { name: '一蘭拉麵', desc: '經典豚骨拉麵' },
-                    { name: '名代豬排', desc: '三條名店，豬排鮮嫩' },
-                    { name: '六角沾麵', desc: '在地人氣沾麵(現金支付)' }
+                shops: [
+                    { area: '四條河原町/新京極', items: [{ name: '錦市場', hours: '10:00-18:00', desc: '京都的廚房' }] }
                 ]
+            };
+
+            const checkList = {
+                "必帶物品": ["護照", "日幣現金", "行動電源"]
             };
 
             const getTypeColor = (type) => {
                 const colors = {
                     transport: 'bg-blue-500',
-                    flight: 'bg-sky-500',
+                    flight: 'bg-sky-600',
                     hotel: 'bg-indigo-500',
                     food: 'bg-orange-500',
-                    sight: 'bg-emerald-500',
+                    sight: 'bg-emerald-600',
                     other: 'bg-gray-500'
                 };
                 return colors[type] || 'bg-gray-500';
@@ -280,32 +339,26 @@
                     hotel: 'fas fa-hotel',
                     food: 'fas fa-utensils',
                     sight: 'fas fa-camera',
-                    other: 'fas fa-ellipsis-h'
+                    other: 'fas fa-walking'
                 };
-                return icons[type] || 'fas fa-map-marker-alt';
+                return icons[type] || 'fas fa-dot-circle';
             };
 
             const getTypeLabel = (type) => {
                 const labels = {
-                    transport: '交通移動',
-                    flight: '航班飛行',
-                    hotel: '飯店住宿',
-                    food: '餐飲美食',
-                    sight: '景點參訪',
-                    other: '其他活動'
+                    transport: '交通',
+                    flight: '航班',
+                    hotel: '住宿',
+                    food: '餐飲',
+                    sight: '景點',
+                    other: '活動'
                 };
                 return labels[type] || '行程';
             };
 
             return {
-                currentTab,
-                dateLabels,
-                schedule,
-                mustVisit,
-                getTypeColor,
-                getIcon,
-                getTypeLabel,
-                refreshApp
+                currentTab, dateLabels, schedule, mustVisit, checkList, incenseData,
+                refreshApp, getTypeColor, getIcon, getTypeLabel
             };
         }
     }).mount('#app');
